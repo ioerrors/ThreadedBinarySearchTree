@@ -47,13 +47,15 @@ class threadedBST {
   friend ostream &operator<<(ostream &os, const threadedBST &list);
 
 private:
-  // current number of levels
-  int height = 1;
+  // O(n) Traverses in order threadedBST, calls display
+  void inOrderTraversal();
 
+  // display node
+  void displayNode();
 
 public:
-  // default threadedBST has only 1 level, just one doubly-linked list
-  explicit threadedBST(int height = 1);
+  // default threadedBST has only 1 node
+  explicit threadedBST();
 
   //copy constructor
   threadedBST(const threadedBST&);
@@ -69,6 +71,12 @@ public:
 
   // return true if found in threadedBST
   bool contains(int data) const;
+
+  // return true if threadedBST
+  bool isEmpty();
+
+  // clear, destroys 
+  void clear();
 
 };
 
