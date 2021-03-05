@@ -53,6 +53,9 @@ private:
   // display node
   void displayNode();
 
+  // root node
+  TNode *root;
+
 public:
   // default threadedBST has only 1 node
   explicit threadedBST();
