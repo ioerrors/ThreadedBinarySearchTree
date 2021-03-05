@@ -109,6 +109,9 @@ threadedBST::~threadedBST() {
   delete[] rearGuards;
 }
 
+//WIP MICAH CODE:
+
+
 //-----------------------------------------------------------------------------
 // return true if successfully removed
 // PRE: data may or may exist in threadedBST
@@ -193,6 +196,9 @@ bool addHelper(int data, TNode* node) {
   return true;
 }
 
+
+// BRUCE CODE:
+
 //-----------------------------------------------------------------------------
 // Checks to see whether or not a data value exists in the list
 // Returns true if the value exists in the threadedBST.
@@ -214,4 +220,23 @@ bool threadedBST::contains(int target, TNode* root) const {
     contains(target, root); 
   }
   return false; 
+}
+
+
+//comment these
+bool isEmpty() {
+  if(root == nullptr){
+    return true;
+  }
+  return false;
+}
+
+bool clear(TNode* subTreePtr){
+  if(subTreePtr != nullptr){
+  clear(subTreePtr->leftChild);
+    clear(subTreePtr->rightChild);
+    subTreePtr->leftChild = nullptr;
+    subTreePtr->rightChild = nullptr:
+    delete subTreePtr;
+  }
 }
