@@ -12,6 +12,7 @@
 #include <climits>
 #include <cstdlib>
 #include <iostream>
+#include <queue>
 
 #include "threadedBST.h"
 
@@ -22,30 +23,51 @@ using namespace std;
 // display all the elements of the threadedBST
 // PRE: threadedBST &list exists
 // POST: ostream has formatted output of threadedBST, example:
-ostream &operator<<(ostream &os, const threadedBST &list) {
-  int sposition = 40
-  TNode* curr = root;
-  for (int j = 0; j < sposition; j++) {
-    out << " ";
+ostream &operator<<(ostream &os, const threadedBST &threadB) {
+  // return if the tree is empty
+  if (threadB.root == nullptr) {
+      return os;
   }
-  out << "      " << curr->data << endl;
-  for (int k = 0; k < sposition; k++) {
-    out << " ";
+  // print the threadB.root node
+  os << threadB.root->data << " ";
+  // create two empty queues and enqueue threadB.root's left and
+  // right child, respectively
+  queue<TNode*> q1, q2;
+  q1.push(threadB.root->left);
+  q2.push(threadB.root->right);
+  // loop till queue is empty
+  while (!q1.empty()) {
+    // calculate the total number of TNodes at the current level
+    int n = q1.size();
+    // process every TNode of the current level
+    while (n--) {
+      // dequeue front TNode from the first queue and print it
+      TNode* x = q1.front();
+      q1.pop();
+      os << x->data << " ";
+      // enqueue left and right child of `x` to the first queue
+      if (x->left) {
+          q1.push(x->left);
+      }
+      if (x->right) {
+          q1.push(x->right);
+      }
+      // dequeue front TNode from the second queue and print it
+      TNode* y = q2.front();
+      q2.pop();
+      os << y->data << " ";
+      // enqueue right and left child of `y` to the second queue
+      if (y->right) {
+          q2.push(y->right);
+      }
+      if (y->left) {
+          q2.push(y->left);
+      }
+    }
   }
-  out << "   " << curr->left->data << "   " << curr->right->data << endl;
-  for (int l = 0; l < sposition - 4; l++) {
-    out << " ";
-  }
-
-  os << "Level: " + to_string(index) + " -- ";
-  TNode *curr = list.frontGuards[index];
-  while (curr != nullptr) {
-    os << to_string(curr->data) + ", ";
-    curr = curr->next;
-  }
-  os << "\n";
   return os;
 }
+
 
 //-----------------------------------------------------------------------------
 // TNode CONSTRUCTOR
@@ -53,21 +75,21 @@ ostream &operator<<(ostream &os, const threadedBST &list) {
 // POST: this TNode is created and data is set
 //       next/prev/upLevel/downLevel are nullptr
 TNode::TNode(int data) : data{data} {
-  leftChild = nullptr;
-  rightChild = nullptr;
-  rightThread = nullptr;
-  leftThread = nullptr;
+  left = nullptr;
+  right = nullptr;
+  rightThread = false;
+  leftThread = false;
 }
 
 //-----------------------------------------------------------------------------
 // threadedBST CONSTRUCTOR
-// default threadedBST has value of 1, one doubly-linked list
+// default threadedBST has data of 1, one doubly-linked list
 // PRE: this threadedBST does not exist
-// POST: threadedBST is created with value specified,
+// POST: threadedBST is created with data specified,
 //       frontGuards and RearGaurds are dynamically allocated
 //       at each level special TNode* objects created to be guards
 //       and all the TNode objects are tied together
-threadedBST::threadedBST(int n) : n{n} { 
+threadedBST::threadedBST(int n) {
   //indexes
   int start = 0;
   int end = n; 
@@ -78,14 +100,14 @@ threadedBST::threadedBST(int n) : n{n} {
     mid++;
   }
 
-  //create node, attach to root
-  root = new TNode(mid);
-  constructorHelper(start, mid - 1, 0); 
-  constructorHelper(mid + 1, end, end); 
+  //create node, attach to this->root
+  this->root = new TNode(mid);
+  constructorHelper(start, mid - 1);
+  constructorHelper(mid + 1, end);
 }
 
 
-void threadedBST::constructorHelper(int start, int end, int max) {
+void threadedBST::constructorHelper(int start, int end) {
   //pick middle index
   int mid = (start + end) / 2; 
   //add middle index
@@ -108,7 +130,7 @@ void threadedBST::constructorHelper(int start, int end, int max) {
 // POST: threadedBST is deleted, all memory deallocated, no leaks
 threadedBST::~threadedBST() {
   // need to delete individual nodes
-  clear();
+  clear(this->root);
 }
 
 //WIP MICAH CODE:
@@ -119,12 +141,12 @@ threadedBST::~threadedBST() {
 // PRE: data may or may exist in threadedBST
 // POST: data removed from threadedBST, returned true
 //       if data already did not exist in list returned false
-bool threadedBST::removeHelper(int data, TNode* node) {
-  if (data < node->data) {
-    return removeHelper(data, node->left);
+bool threadedBST::removeHelper(int value, TNode* node) {
+  if (value < node->data) {
+    return removeHelper(value, node->left);
   }
-  else if (data > node->data) {
-    return removeHelper(data, node->right);
+  else if (value > node->data) {
+    return removeHelper(value, node->right);
   }
   else {
     //at this point data === node->data
@@ -136,9 +158,9 @@ bool threadedBST::removeHelper(int data, TNode* node) {
     //node should be at node to remove
     TNode *findLeaf = node->left;
     //rightmost leaf of node's left child
-    while (findleaf->right->left != nullptr 
-        && findleaf->right->right != nullptr) {
-      findleaf = findLeaf->right;
+    while (findLeaf->right->left != nullptr 
+        && findLeaf->right->right != nullptr) {
+      findLeaf = findLeaf->right;
     }
     node->data = findLeaf->right->data;
     delete findLeaf->right;
@@ -147,11 +169,11 @@ bool threadedBST::removeHelper(int data, TNode* node) {
   return true;
 }
 
-bool threadedBST::remove(int data) {
-  if (!contains(data)) {
+bool threadedBST::remove(int value) {
+  if (!contains(value)) {
     return false;
   }
-  return removeHelper(data, root);
+  return removeHelper(value, this->root);
 }
 
 
@@ -163,84 +185,85 @@ bool threadedBST::remove(int data) {
 //       TNode is created with data and added to threadedBST
 //       OR if data did exist in threadedBST, returned false
 //       (no duplicates allowed)
-bool add(int data) {
-  //would like to just say contains(data)
-  if (contains(data, root)) { //maybe include containsHelper(data, root);
-    cout << "Duplicates are not allowed: " << data << endl;
-    return false;
-  }
-  return addHelper(data, root);
-}
 // recursive helper function for add() --> addHelper()
-bool addHelper(int data, TNode* node) {
-  if (data < node->data) {
-    if (node->left != null) { //goes down left branch
-      return addHelper(data, node->left);
+bool threadedBST::addHelper(int value, TNode* node) {
+  if (value < node->data) {
+    if (node->left != nullptr) { //goes down left branch
+      return addHelper(value, node->left);
     }
     else { // found leaf
-      TNode* newNode = new TNode(data); 
+      TNode* newNode = new TNode(value); 
       node->left = newNode;
     }
   }
-  if (data > node->data) {
-    if (node->right != null) { //goes down right branch
-      return addHelper(data, node->right);
+  if (value > node->data) {
+    if (node->right != nullptr) { //goes down right branch
+      return addHelper(value, node->right);
     }
     else { // found leaf
-      TNode* newNode = new TNode(data); //create node directly before use
+      TNode* newNode = new TNode(value); //create node directly before use
       node->right = newNode;
     }
   }
   return true;
 }
+bool threadedBST::threadedBST::add(int value) {
+  //would like to just say contains(value)
+  if (contains(value)) { //maybe include containsHelper(data, this->root);
+    cout << "Duplicates are not allowed: " << value << endl;
+    return false;
+  }
+  return addHelper(value, this->root);
+}
+
 
 
 // BRUCE CODE:
 
 //-----------------------------------------------------------------------------
-// Checks to see whether or not a data value exists in the list
-// Returns true if the value exists in the threadedBST.
+// Checks to see whether or not a data data exists in the list
+// Returns true if the data exists in the threadedBST.
 // Returns false otherwise
 // PRE: data may or may exist in threadedBST
 // POST: if data exists in threadedBST, returned true
 //       OR if data does not exist in list, returned false
-bool threadedBST::constains(int target) {
-  return containsHelper(target, root);
+bool threadedBST::contains(int target) const {
+  return containsHelper(target, this->root);
 }
 
 bool threadedBST::containsHelper(int target, TNode* node) const {
-  //check if node's value is target
-  if(target == node->value) {
+  //check if node's data is target
+  if(target == node->data) {
     return true;
   }
-  if(node->value < target  && node->rightChild !=null 
+  if(node->data < target  && node->right != nullptr 
                            && node->rightThread == false) {
-    node = node->rightChild; 
-    containsHelpert, node); 
+    node = node->right; 
+    containsHelper(target, node); 
   }
-  if(node->value > target && node->leftChild !=null 
+  if(node->data > target && node->left != nullptr 
                           && node->leftThread == false) {
-    node = node->leftChild; 
-    containsHelpert, node); 
+    node = node->left; 
+    containsHelper(target, node); 
   }
   return false; 
 }
 
 
 //comment these
-bool isEmpty() {
-  if(root == nullptr){
+bool threadedBST::isEmpty() {
+  if (this->root == nullptr){
     return true;
   }
   return false;
 }
 
-void clear(TNode* subTreePtr){
+void threadedBST::clear(TNode* subTreePtr) {
   if(subTreePtr != nullptr){
-  clear(subTreePtr->leftChild);
-    clear(subTreePtr->rightChild);
-    subTreePtr->leftChild = nullptr;
-    subTreePtr->rightChild = nullptr:
+  clear(subTreePtr->left);
+    clear(subTreePtr->right);
+    subTreePtr->left = nullptr;
+    subTreePtr->right = nullptr;
     delete subTreePtr;
   }
 }

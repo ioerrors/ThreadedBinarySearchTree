@@ -6,8 +6,8 @@
 // Can search a threadedBST and find items in O(log n) time. 
 // No duplicates are allowed.
 
-#ifndef ASS4_THREADEDBST_H
-#define ASS4_THREADEDBST_H
+#ifndef ASS5_THREADEDBST_H
+#define ASS5_THREADEDBST_H
 
 #include <iostream>
 
@@ -28,11 +28,11 @@ private:
   // data contained in the object
   int data;
 
-  // link to Next TNode 
-  TNode *leftChild;
+  // link to left TNode child
+  TNode *left;
 
-  // link to Prev TNode
-  TNode *rightChild;
+  // link to right TNode child
+  TNode *right;
 
   // true if left child pointer is actually a thread
   bool leftThread; 
@@ -60,20 +60,21 @@ private:
   bool removeHelper(int data, TNode* node);
   
   // containsHelper()
-  bool containsHelper(int data, TNode* node);
+  bool containsHelper(int target, TNode* node) const;
 
   // constructorHelper()
   void constructorHelper(int start, int end);
 
-  // root node
-  TNode *root;
+
 
   int max;
 
 public:
-  // default threadedBST has only 1 node
-  explicit threadedBST();
+  // default threadedBST is empty
+  explicit threadedBST(int n);
 
+  // root node
+  TNode* root;
   //copy constructor
   threadedBST(const threadedBST&);
 
@@ -93,8 +94,9 @@ public:
   bool isEmpty();
 
   // clear, destroys 
-  void clear();
+  void clear(TNode* subTreePtr);
 
 };
 
+#endif //ASS5_THREADEDBST_H
 
