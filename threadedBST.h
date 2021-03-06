@@ -65,10 +65,6 @@ private:
   // constructorHelper()
   void constructorHelper(int start, int end);
 
-
-
-  int max;
-
 public:
   // default threadedBST is empty
   explicit threadedBST(int n);
