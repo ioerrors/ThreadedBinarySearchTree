@@ -53,8 +53,22 @@ private:
   // display node
   void displayNode();
 
+  // addHelper()
+  bool addHelper(int data, TNode* node);
+  
+  // removeHelper()
+  bool removeHelper(int data, TNode* node);
+  
+  // containsHelper()
+  bool containsHelper(int data, TNode* node);
+
+  // constructorHelper()
+  void constructorHelper(int start, int end);
+
   // root node
   TNode *root;
+
+  int max;
 
 public:
   // default threadedBST has only 1 node
