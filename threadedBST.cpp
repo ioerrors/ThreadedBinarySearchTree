@@ -94,7 +94,7 @@ threadedBST::threadedBST(int n) {
   int start = 0;
   int end = n; 
   int mid = (end + start) / 2; 
-  max = n;
+
   //test this!
   if (n % 2 != 0) {
     mid++;
