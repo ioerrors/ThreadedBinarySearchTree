@@ -23,11 +23,20 @@ using namespace std;
 // PRE: threadedBST &list exists
 // POST: ostream has formatted output of threadedBST, example:
 ostream &operator<<(ostream &os, const threadedBST &list) {
-  int levels = log(max + 1) / log(2);
   int sposition = 40
-  for (int i = sposition; i > 0; i-= 4) {
-    cout << " ";
+  TNode* curr = root;
+  for (int j = 0; j < sposition; j++) {
+    out << " ";
   }
+  out << "      " << curr->data << endl;
+  for (int k = 0; k < sposition; k++) {
+    out << " ";
+  }
+  out << "   " << curr->left->data << "   " << curr->right->data << endl;
+  for (int l = 0; l < sposition - 4; l++) {
+    out << " ";
+  }
+
   os << "Level: " + to_string(index) + " -- ";
   TNode *curr = list.frontGuards[index];
   while (curr != nullptr) {
@@ -35,7 +44,6 @@ ostream &operator<<(ostream &os, const threadedBST &list) {
     curr = curr->next;
   }
   os << "\n";
-  }
   return os;
 }
 
