@@ -267,3 +267,28 @@ void threadedBST::clear(TNode* subTreePtr) {
     delete subTreePtr;
   }
 }
+
+/*
+
+//returns true if node is a leaf
+bool TNode::isLeaf(){
+  if(this->leftChild==nullptr  && this->rightThread==true 
+  || this->rightChild==nullptr && this->leftThread==true 
+  || this->leftThread==true    && this->rightThread==true){
+      return true;
+    }
+    return false; 
+}
+
+void display(){
+  cout << this->data << ","; 
+}
+
+void threadedBST::inorder(TNode* treePtr){
+  if(!treePtr->isLeaf()){
+    inOrder(treePtr->leftThread);
+    treePtr->display();
+
+  }
+}
+*/
