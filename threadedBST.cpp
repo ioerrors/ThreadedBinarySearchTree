@@ -1,12 +1,12 @@
-////////////////////////////////  threadedBST.cpp file  //////////////////////////
+////////////////////////////////  threadedBST.cpp file
+/////////////////////////////
 //-----------------------------------------------------------------------------
 // Created by Micah Rice on 02/19/2021.
 //
 // threadedBST class demonstrating data structure
 // Can search a threadedBST and find items in O(log n) time.
 // No duplicates are allowed.
-// Assumptions: Will not contain 0 or negative numbers 
-
+// Assumptions: Will not contain 0 or negative numbers
 
 #include <cassert>
 #include <climits>
@@ -26,13 +26,13 @@ using namespace std;
 ostream &operator<<(ostream &os, const threadedBST &threadB) {
   // return if the tree is empty
   if (threadB.root == nullptr) {
-      return os;
+    return os;
   }
   // print the threadB.root node
   os << threadB.root->data << " ";
   // create two empty queues and enqueue threadB.root's left and
   // right child, respectively
-  queue<TNode*> q1, q2;
+  queue<TNode *> q1, q2;
   q1.push(threadB.root->left);
   q2.push(threadB.root->right);
   // loop till queue is empty
@@ -42,32 +42,31 @@ ostream &operator<<(ostream &os, const threadedBST &threadB) {
     // process every TNode of the current level
     while (n--) {
       // dequeue front TNode from the first queue and print it
-      TNode* x = q1.front();
+      TNode *x = q1.front();
       q1.pop();
       os << x->data << " ";
       // enqueue left and right child of `x` to the first queue
       if (x->left) {
-          q1.push(x->left);
+        q1.push(x->left);
       }
       if (x->right) {
-          q1.push(x->right);
+        q1.push(x->right);
       }
       // dequeue front TNode from the second queue and print it
-      TNode* y = q2.front();
+      TNode *y = q2.front();
       q2.pop();
       os << y->data << " ";
       // enqueue right and left child of `y` to the second queue
       if (y->right) {
-          q2.push(y->right);
+        q2.push(y->right);
       }
       if (y->left) {
-          q2.push(y->left);
+        q2.push(y->left);
       }
     }
   }
   return os;
 }
-
 
 //-----------------------------------------------------------------------------
 // TNode CONSTRUCTOR
@@ -90,45 +89,42 @@ TNode::TNode(int data) : data{data} {
 //       at each level special TNode* objects created to be guards
 //       and all the TNode objects are tied together
 threadedBST::threadedBST(int n) {
-  //indexes
+  // indexes
   int start = 1;
-  int end = n; 
-  int mid = (end + start) / 2; 
+  int end = n;
+  int mid = (end + start) / 2;
 
-  //test this!
+  // test this!
   /*
   if (n % 2 != 0) {
     mid++;
   }
   */
-  //create node, attach to this->root
+  // create node, attach to this->root
   this->root = new TNode(mid);
   constructorHelper(start, mid);
   constructorHelper(mid + 1, end);
 
-  //add threads
+  // add threads
 }
-
 
 void threadedBST::constructorHelper(int start, int end) {
   if (start <= end) {
-     //pick middle index
+    // pick middle index
     int mid = (start + end) / 2;
-    if(mid != root->data) {
-        //add middle index
-        add(mid);
+    if (mid != root->data) {
+      // add middle index
+      add(mid);
     }
     if (start != end) {
       if (end > 2) {
-      // call on sub array left
-        constructorHelper(start, mid - 1); 
+        // call on sub array left
+        constructorHelper(start, mid - 1);
       }
       constructorHelper(mid + 1, end);
-    }   
+    }
   }
 }
-
-
 
 //-----------------------------------------------------------------------------
 // destructor
@@ -139,50 +135,46 @@ threadedBST::~threadedBST() {
   clear(this->root);
 }
 
-//WIP MICAH CODE:
-
+// WIP MICAH CODE:
 
 //-----------------------------------------------------------------------------
 // return true if successfully removed
 // PRE: data may or may exist in threadedBST
 // POST: data removed from threadedBST, returned true
 //       if data already did not exist in list returned false
-bool threadedBST::removeHelper(int value, TNode* node) {
+bool threadedBST::removeHelper(int value, TNode *node) {
   if (value < node->data) {
     return removeHelper(value, node->left);
-  }
-  else if (value > node->data) {
+  } else if (value > node->data) {
     return removeHelper(value, node->right);
-  }
-  else {
+  } else {
     // at this point data === node->data
     // check if leaf, if so, remove.
-    if (node->left == nullptr && node->right == nullptr)  {
+    if (node->left == nullptr && node->right == nullptr) {
       delete node;
     }
     // check if right child only
-    else if (node->left == nullptr && node->right != nullptr)  {
-      TNode* deleteMe = node->right;
+    else if (node->left == nullptr && node->right != nullptr) {
+      TNode *deleteMe = node->right;
       node->right = deleteMe->right;
       node->data = deleteMe->data;
       delete deleteMe;
     }
     // check if left child only
-    else if (node->left != nullptr && node->right == nullptr)  {
-      TNode* deleteMe = node->left;
+    else if (node->left != nullptr && node->right == nullptr) {
+      TNode *deleteMe = node->left;
       node->left = deleteMe->left;
       node->data = deleteMe->data;
       delete deleteMe;
     }
-    //oh no; has both
+    // oh no; has both
     else {
-      //take right subtree
-      TNode* subTreeParent = node;
-      TNode* subTreePtr = node->right;
+      // take right subtree
+      TNode *subTreeParent = node;
+      TNode *subTreePtr = node->right;
 
-      
-      //move to leftmost child
-      while(subTreePtr->left != nullptr) {
+      // move to leftmost child
+      while (subTreePtr->left != nullptr) {
         subTreeParent = subTreePtr;
         subTreePtr = subTreePtr->left;
       }
@@ -191,15 +183,13 @@ bool threadedBST::removeHelper(int value, TNode* node) {
 
       // if leaf, sets parent->left to nullptr
       // if right child only, sets parent->left to that branch
-      subTreeParent->left = subTreePtr->right;   
+      subTreeParent->left = subTreePtr->right;
       // now delete subTreePtr
       delete subTreePtr;
     }
-
   }
   return true;
 }
-
 
 //
 bool threadedBST::remove(int value) {
@@ -208,7 +198,6 @@ bool threadedBST::remove(int value) {
   }
   return removeHelper(value, this->root);
 }
-
 
 //-----------------------------------------------------------------------------
 // add()
@@ -219,37 +208,33 @@ bool threadedBST::remove(int value) {
 //       OR if data did exist in threadedBST, returned false
 //       (no duplicates allowed)
 // recursive helper function for add() --> addHelper()
-bool threadedBST::addHelper(int value, TNode* node) {
+bool threadedBST::addHelper(int value, TNode *node) {
   if (value < node->data) {
-    if (node->left != nullptr) { //goes down left branch
+    if (node->left != nullptr) { // goes down left branch
       return addHelper(value, node->left);
-    }
-    else { // found leaf
-      TNode* newNode = new TNode(value); 
+    } else { // found leaf
+      TNode *newNode = new TNode(value);
       node->left = newNode;
     }
   }
   if (value > node->data) {
-    if (node->right != nullptr) { //goes down right branch
+    if (node->right != nullptr) { // goes down right branch
       return addHelper(value, node->right);
-    }
-    else { // found leaf
-      TNode* newNode = new TNode(value); //create node directly before use
+    } else {                             // found leaf
+      TNode *newNode = new TNode(value); // create node directly before use
       node->right = newNode;
     }
   }
   return true;
 }
 bool threadedBST::threadedBST::add(int value) {
-  //would like to just say contains(value)
-  if (contains(value)) { //maybe include containsHelper(data, this->root);
+  // would like to just say contains(value)
+  if (contains(value)) { // maybe include containsHelper(data, this->root);
     cout << "Duplicates are not allowed: " << value << endl;
     return false;
   }
   return addHelper(value, this->root);
 }
-
-
 
 // BRUCE CODE:
 
@@ -264,36 +249,35 @@ bool threadedBST::contains(int target) const {
   return containsHelper(target, this->root);
 }
 
-bool threadedBST::containsHelper(int target, TNode* node) const {
-  //check if node's data is target
-  if(target == node->data) {
+bool threadedBST::containsHelper(int target, TNode *node) const {
+  // check if node's data is target
+  if (target == node->data) {
     return true;
   }
-  if(node->data < target  && node->right != nullptr 
-                          && node->rightThread == false) {
-    node = node->right; 
-    return containsHelper(target, node); 
-  }
-  if(node->data > target && node->left != nullptr 
-                         && node->leftThread == false) {
-    node = node->left; 
+  if (node->data < target && node->right != nullptr &&
+      node->rightThread == false) {
+    node = node->right;
     return containsHelper(target, node);
   }
-  return false; 
+  if (node->data > target && node->left != nullptr &&
+      node->leftThread == false) {
+    node = node->left;
+    return containsHelper(target, node);
+  }
+  return false;
 }
 
-
-//comment these
+// comment these
 bool threadedBST::isEmpty() {
-  if (this->root == nullptr){
+  if (this->root == nullptr) {
     return true;
   }
   return false;
 }
 
-void threadedBST::clear(TNode* subTreePtr) {
-  if(subTreePtr != nullptr){
-  clear(subTreePtr->left);
+void threadedBST::clear(TNode *subTreePtr) {
+  if (subTreePtr != nullptr) {
+    clear(subTreePtr->left);
     clear(subTreePtr->right);
     subTreePtr->left = nullptr;
     subTreePtr->right = nullptr;
@@ -301,35 +285,34 @@ void threadedBST::clear(TNode* subTreePtr) {
   }
 }
 
-
 //-----------------------------------------------------------------------------
-void threadedBST::addThread(TNode* treePtr){
-  if(treePtr->isLeaf()){
-    if(contains(treePtr->data +1)) {
-      treePtr->right = findNode(treePtr->data +1, this->root); //r
+void threadedBST::addThread(TNode *treePtr) {
+  if (treePtr->isLeaf()) {
+    if (contains(treePtr->data + 1)) {
+      treePtr->right = findNode(treePtr->data + 1, this->root); // r
       treePtr->rightThread = true;
       return;
     }
     if (contains(treePtr->data - 1)) {
-      treePtr->left = findNode(treePtr->data - 1, this->root); //r
+      treePtr->left = findNode(treePtr->data - 1, this->root); // r
       treePtr->leftThread = true;
       return;
     }
   }
 
   if (treePtr->left != nullptr) {
-    addThread(treePtr->left); //a
+    addThread(treePtr->left); // a
   }
-  
-  if(treePtr->right == nullptr){
-    if (contains(treePtr->data +1)) {
-      treePtr->right = findNode(treePtr->data +1, this->root); // t
+
+  if (treePtr->right == nullptr) {
+    if (contains(treePtr->data + 1)) {
+      treePtr->right = findNode(treePtr->data + 1, this->root); // t
       treePtr->rightThread = true;
       return;
     }
   }
-  if(treePtr->left == nullptr){
-    if (contains(treePtr->data  - 1)) {
+  if (treePtr->left == nullptr) {
+    if (contains(treePtr->data - 1)) {
       treePtr->left = findNode(treePtr->data - 1, this->root); // d
       treePtr->leftThread = true;
       return;
@@ -337,53 +320,48 @@ void threadedBST::addThread(TNode* treePtr){
   }
 
   if (treePtr->right != nullptr) {
-    addThread(treePtr->right); //b
+    addThread(treePtr->right); // b
   }
   return;
 }
 
-
 //-----------------------------------------------------------------------------
-TNode* threadedBST::findNode(int target, TNode* treePtr){ 
-  if(target == treePtr->data){ 
+TNode *threadedBST::findNode(int target, TNode *treePtr) {
+  if (target == treePtr->data) {
     return treePtr;
   }
-  if(treePtr->data > target && treePtr->left != nullptr
-                            && treePtr->leftThread == false){ 
+  if (treePtr->data > target && treePtr->left != nullptr &&
+      treePtr->leftThread == false) {
     return findNode(target, treePtr->left);
   }
-  if(treePtr->data < target && treePtr->left !=nullptr
-                            && treePtr->leftThread == false){ 
+  if (treePtr->data < target && treePtr->left != nullptr &&
+      treePtr->leftThread == false) {
     return findNode(target, treePtr->right);
-  }  
+  }
   return nullptr;
 }
 
 //-----------------------------------------------------------------------------
-//returns true if node is a leaf
-bool TNode::isLeaf(){
-  if ((this->left==nullptr  && this->rightThread == true)
-  || (this->right==nullptr && this->leftThread == true)
-  || (this->leftThread == true && this->rightThread == true)) {
-      return true;
-    }
-    return false; 
+// returns true if node is a leaf
+bool TNode::isLeaf() {
+  if ((this->left == nullptr && this->rightThread == true) ||
+      (this->right == nullptr && this->leftThread == true) ||
+      (this->leftThread == true && this->rightThread == true)) {
+    return true;
+  }
+  return false;
 }
 
+//-----------------------------------------------------------------------------
+void TNode::display() { cout << this->data << ", "; }
 
 //-----------------------------------------------------------------------------
-void TNode::display(){
-  cout << this->data << ", "; 
-}
-
-
-//-----------------------------------------------------------------------------
-void threadedBST::printInOrder(TNode* treePtr){
-  if(treePtr->isLeaf()){
-    treePtr->display(); //out
+void threadedBST::printInOrder(TNode *treePtr) {
+  if (treePtr->isLeaf()) {
+    treePtr->display(); // out
     return;
   }
-  printInOrder(treePtr->left); //a
-  treePtr->display(); //b
-  printInOrder(treePtr->right); //c
+  printInOrder(treePtr->left);  // a
+  treePtr->display();           // b
+  printInOrder(treePtr->right); // c
 }
