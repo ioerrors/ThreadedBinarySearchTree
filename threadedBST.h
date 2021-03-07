@@ -55,9 +55,7 @@ class threadedBST {
   friend ostream &operator<<(ostream &os, const threadedBST &list);
 
 private:
-  // O(n) Traverses in order threadedBST, calls display
-  void inOrderTraversal();
-
+  
   // addHelper()
   bool addHelper(int data, TNode* node);
   
