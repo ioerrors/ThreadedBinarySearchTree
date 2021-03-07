@@ -40,6 +40,12 @@ private:
   // true if right child pointer is actually a thread
   bool rightThread;
 
+  // true if node is a leaf
+  bool isLeaf();
+
+  //print out node's data
+  void display();
+
 };
 
 class threadedBST {
@@ -49,9 +55,6 @@ class threadedBST {
 private:
   // O(n) Traverses in order threadedBST, calls display
   void inOrderTraversal();
-
-  // display node
-  void displayNode();
 
   // addHelper()
   bool addHelper(int data, TNode* node);
@@ -64,6 +67,22 @@ private:
 
   // constructorHelper()
   void constructorHelper(int start, int end);
+
+  /*
+  traverse through tree inorder
+  calls display() at each node to print out data
+  */
+  void printInOrder(TNode* treePtr);
+
+  //places threads where applicable
+  void addThread(TNode* treePtr);
+
+  /*
+  searches tree for node with target data
+  returns pointer to target findNode
+  returns nullptr if not found
+  */
+  TNode* findNode(int target, TNode* treePtr);
 
 public:
   // default threadedBST is empty
@@ -95,4 +114,3 @@ public:
 };
 
 #endif //ASS5_THREADEDBST_H
-
