@@ -17,6 +17,7 @@ using namespace std;
 
 class threadedBST;
 
+//-----------------------------------------------------------------------------
 class TNode {
   friend class threadedBST;
   friend ostream &operator<<(ostream &out, const threadedBST &bst);
@@ -48,6 +49,7 @@ private:
 
 };
 
+//-----------------------------------------------------------------------------
 class threadedBST {
   // display with level
   friend ostream &operator<<(ostream &os, const threadedBST &list);
