@@ -1,4 +1,6 @@
 Assignment5 CSS 342 C University of Washington
+Note 3/08/2021
+Currently constructs properly with threads. remove untested. no iterator yet.
 
 Note: 2/28/2021
 Currently just placeholder code from assignment 4
