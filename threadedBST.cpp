@@ -352,6 +352,10 @@ bool TNode::isLeaf() {
   return false;
 }
 
+TNode* threadedBST::getRoot(){
+  return this->root;
+}
+
 //-----------------------------------------------------------------------------
 void TNode::display() { cout << this->data << ", "; }
 
@@ -365,3 +369,23 @@ void threadedBST::printInOrder(TNode *treePtr) {
   treePtr->display();           // b
   printInOrder(treePtr->right); // c
 }
+
+//-----------------------------------------------------------------------------
+// threadedBST copy constructor
+// PRE: None
+// POST: a new threadedBST is made, separate but identical to original threadedBST
+threadedBST::threadedBST(threadedBST& newTree){
+  threadedBST(copyConstHelper(newTree.getRoot()));
+}
+
+// traverses through right branches
+// returns largest integer in tree
+
+int threadedBST::copyConstHelper(TNode* treePtr){
+  while(treePtr->right != nullptr){
+    treePtr=treePtr->right;
+  }
+  return (treePtr->data);
+}
+
+

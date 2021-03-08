@@ -44,6 +44,7 @@ private:
   // true if node is a leaf
   bool isLeaf();
 
+public:
   //print out node's data
   void display();
 
@@ -84,14 +85,18 @@ private:
   */
   TNode* findNode(int target, TNode* treePtr);
 
+  // copy constructor helper
+  int copyConstHelper(TNode* treePtr);
+
+  // root node
+  TNode* root;
+
 public:
   // default threadedBST is empty
   explicit threadedBST(int n);
 
-  // root node
-  TNode* root;
   //copy constructor
-  threadedBST(const threadedBST&);
+  threadedBST(threadedBST& newTree);
 
   // destructor
   virtual ~threadedBST();
@@ -110,6 +115,10 @@ public:
 
   // clear, destroys 
   void clear(TNode* subTreePtr);
+
+  //getter
+  //returns root of Tree
+  TNode* getRoot();
 
 };
 
