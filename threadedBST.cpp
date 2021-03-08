@@ -8,11 +8,7 @@
 // No duplicates are allowed.
 // Assumptions: Will not contain 0 or negative numbers
 
-#include <cassert>
-#include <climits>
-#include <cstdlib>
 #include <iostream>
-#include <queue>
 
 #include "threadedBST.h"
 
@@ -125,8 +121,6 @@ threadedBST::~threadedBST() {
   clear(this->root);
 }
 
-// WIP MICAH CODE:
-
 //-----------------------------------------------------------------------------
 // return true if successfully removed
 // PRE: data may or may exist in threadedBST
@@ -225,8 +219,6 @@ bool threadedBST::threadedBST::add(int value) {
   }
   return addHelper(value, this->root);
 }
-
-// BRUCE CODE:
 
 //-----------------------------------------------------------------------------
 // Checks to see whether or not a data data exists in the list
