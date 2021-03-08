@@ -68,6 +68,12 @@ private:
   // constructorHelper()
   void constructorHelper(int start, int end);
 
+  //
+  int copyConstHelper(TNode* treePtr);
+
+
+  //
+  TNode* getRoot() const;
   /*
   traverse through tree inorder
   calls display() at each node to print out data
@@ -90,8 +96,11 @@ public:
 
   // root node
   TNode* root;
+
   //copy constructor
-  threadedBST(const threadedBST&);
+  threadedBST(const threadedBST& oldBST);
+
+
 
   // destructor
   virtual ~threadedBST();
