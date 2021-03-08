@@ -32,9 +32,9 @@ ostream &operator<<(ostream &os, const threadedBST &threadA) {
     os << threadA.root->data << ", "; // out
     return os;
   }
-  //TODO: Fix this.
+  // TODO: Fix this.
   os << threadA.root->left << ", ";  // a
-  os << threadA.root->data << ", ";           // b
+  os << threadA.root->data << ", ";  // b
   os << threadA.root->right << ", "; // c
   return os;
 }
@@ -50,8 +50,6 @@ TNode::TNode(int data) : data{data} {
   rightThread = false;
   leftThread = false;
 }
-
-
 
 //-----------------------------------------------------------------------------
 // threadedBST CONSTRUCTOR
@@ -325,15 +323,15 @@ bool TNode::isLeaf() {
   return false;
 }
 
-
 //-----------------------------------------------------------------------------
 // threadedBST copy constructor
 // PRE: None
-// POST: a new threadedBST is made, separate but identical to original threadedBST
-threadedBST::threadedBST(const threadedBST& oldBST) {
+// POST: a new threadedBST is made, separate but identical to original
+// threadedBST
+threadedBST::threadedBST(const threadedBST &oldBST) {
   // indexes
   int start = 1;
-  TNode* n = oldBST.getRoot();
+  TNode *n = oldBST.getRoot();
   int end = copyConstHelper(n);
   int mid = (end + start) / 2;
 
@@ -346,21 +344,19 @@ threadedBST::threadedBST(const threadedBST& oldBST) {
 //-------------------------------------------------------------------------------
 // traverses through right branches
 // returns largest integer in tree
-int threadedBST::copyConstHelper(TNode* treePtr) {
-  while(treePtr->right != nullptr){
-    treePtr=treePtr->right;
+int threadedBST::copyConstHelper(TNode *treePtr) {
+  while (treePtr->right != nullptr) {
+    treePtr = treePtr->right;
   }
   return (treePtr->data);
 }
 
 //---------------------------------------------------------------------------------
-TNode* threadedBST::getRoot() const{
-  return this->root;
-}
+TNode *threadedBST::getRoot() const { return this->root; }
 /*
 //-----------------------------------------------------------------------------
-ostream TNode::display(ostream &os) { 
-  return << this->data << ", "; 
+ostream TNode::display(ostream &os) {
+  return << this->data << ", ";
 }
 
 //-----------------------------------------------------------------------------
@@ -374,4 +370,3 @@ void threadedBST::printInOrder(TNode *treePtr) {
   printInOrder(treePtr->right); // c
 }
 */
-
