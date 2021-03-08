@@ -1,5 +1,4 @@
 #include <cassert>
-#include <climits>
 #include <iostream>
 
 #include "threadedBST.h"
