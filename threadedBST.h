@@ -20,7 +20,7 @@ class threadedBST;
 //-----------------------------------------------------------------------------
 class TNode {
   friend class threadedBST;
-  friend ostream &operator<<(ostream &out, const threadedBST &bst);
+  friend ostream &operator<<(ostream &os, const threadedBST &list);
 
 private:
   // constructor
@@ -42,7 +42,7 @@ private:
   bool rightThread;
 
   // true if node is a leaf
-  bool isLeaf();
+  bool isLeaf() const;
 
   //print out node's data
   void display();
@@ -68,12 +68,13 @@ private:
   // constructorHelper()
   void constructorHelper(int start, int end);
 
-  //
+  // helps create a copy of another threadedBST
   int copyConstHelper(TNode* treePtr);
 
 
-  //
+  // returns the root of the threadedBST
   TNode* getRoot() const;
+  
   /*
   traverse through tree inorder
   calls display() at each node to print out data
@@ -82,6 +83,20 @@ private:
 
   //places threads where applicable
   void addThread(TNode* treePtr);
+
+
+  //ALERT: COPIED CODE
+  /* Traverses this binary tree in preorder (inorder, postorder) and
+  calls the function visit once for each node.
+  @param visit A client-defined function that performs an operation on
+  or with the data in each visited node. 
+    
+  void preorderTraverse( void visit(int&)) const;
+    
+  void inorderTraverse( void visit(int&)) const;
+    
+  void postorderTraverse( void visit(int&)) const;
+  */
 
   /*
   searches tree for node with target data

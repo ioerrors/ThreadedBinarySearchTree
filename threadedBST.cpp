@@ -28,14 +28,8 @@ ostream &operator<<(ostream &os, const threadedBST &threadA) {
   if (threadA.root == nullptr) {
     return os;
   }
-  if (threadA.root->isLeaf()) {
-    os << threadA.root->data << ", "; // out
-    return os;
-  }
-  // TODO: Fix this.
-  os << threadA.root->left << ", ";  // a
-  os << threadA.root->data << ", ";  // b
-  os << threadA.root->right << ", "; // c
+  // use iterator?
+  os << threadA.root << ", "; // out
   return os;
 }
 
@@ -65,20 +59,14 @@ threadedBST::threadedBST(int n) {
   int end = n;
   int mid = (end + start) / 2;
 
-  // test this!
-  /*
-  if (n % 2 != 0) {
-    mid++;
-  }
-  */
   // create node, attach to this->root
   this->root = new TNode(mid);
   constructorHelper(start, mid);
   constructorHelper(mid + 1, end);
 
   // add threads
+  addThread(this->root);
 }
-
 void threadedBST::constructorHelper(int start, int end) {
   if (start <= end) {
     // pick middle index
@@ -95,6 +83,37 @@ void threadedBST::constructorHelper(int start, int end) {
       constructorHelper(mid + 1, end);
     }
   }
+}
+
+//-----------------------------------------------------------------------------
+// threadedBST copy constructor
+// PRE: None
+// POST: a new threadedBST is made, separate but identical to original
+// threadedBST
+threadedBST::threadedBST(const threadedBST &oldBST) {
+  // indexes
+  int start = 1;
+  TNode *n = oldBST.getRoot();
+  int end = copyConstHelper(n);
+  int mid = (end + start) / 2;
+
+  // create node, attach to this->root
+  this->root = new TNode(mid);
+  constructorHelper(start, mid);
+  constructorHelper(mid + 1, end);
+
+  // add threads
+  addThread(this->root);
+}
+
+//-------------------------------------------------------------------------------
+// traverses through right branches
+// returns largest integer in tree
+int threadedBST::copyConstHelper(TNode *treePtr) {
+  while (treePtr->right != nullptr) {
+    treePtr = treePtr->right;
+  }
+  return (treePtr->data);
 }
 
 //-----------------------------------------------------------------------------
@@ -248,8 +267,12 @@ bool threadedBST::isEmpty() {
 
 void threadedBST::clear(TNode *subTreePtr) {
   if (subTreePtr != nullptr) {
-    clear(subTreePtr->left);
-    clear(subTreePtr->right);
+    if (!subTreePtr->leftThread) {
+      clear(subTreePtr->left);
+    }
+    if (!subTreePtr->rightThread) {
+      clear(subTreePtr->right);
+    }
     subTreePtr->left = nullptr;
     subTreePtr->right = nullptr;
     delete subTreePtr;
@@ -262,13 +285,12 @@ void threadedBST::addThread(TNode *treePtr) {
     if (contains(treePtr->data + 1)) {
       treePtr->right = findNode(treePtr->data + 1, this->root); // r
       treePtr->rightThread = true;
-      return;
     }
     if (contains(treePtr->data - 1)) {
       treePtr->left = findNode(treePtr->data - 1, this->root); // r
       treePtr->leftThread = true;
-      return;
     }
+    return;
   }
 
   if (treePtr->left != nullptr) {
@@ -279,21 +301,17 @@ void threadedBST::addThread(TNode *treePtr) {
     if (contains(treePtr->data + 1)) {
       treePtr->right = findNode(treePtr->data + 1, this->root); // t
       treePtr->rightThread = true;
-      return;
     }
   }
   if (treePtr->left == nullptr) {
     if (contains(treePtr->data - 1)) {
       treePtr->left = findNode(treePtr->data - 1, this->root); // d
       treePtr->leftThread = true;
-      return;
     }
   }
-
   if (treePtr->right != nullptr) {
     addThread(treePtr->right); // b
   }
-  return;
 }
 
 //-----------------------------------------------------------------------------
@@ -301,12 +319,10 @@ TNode *threadedBST::findNode(int target, TNode *treePtr) {
   if (target == treePtr->data) {
     return treePtr;
   }
-  if (treePtr->data > target && treePtr->left != nullptr &&
-      treePtr->leftThread == false) {
+  if (target < treePtr->data && treePtr->left != nullptr) {
     return findNode(target, treePtr->left);
   }
-  if (treePtr->data < target && treePtr->left != nullptr &&
-      treePtr->leftThread == false) {
+  if (target > treePtr->data && treePtr->left != nullptr) {
     return findNode(target, treePtr->right);
   }
   return nullptr;
@@ -314,8 +330,9 @@ TNode *threadedBST::findNode(int target, TNode *treePtr) {
 
 //-----------------------------------------------------------------------------
 // returns true if node is a leaf
-bool TNode::isLeaf() {
-  if ((this->left == nullptr && this->rightThread == true) ||
+bool TNode::isLeaf() const {
+  if ((this->left == nullptr && this->right == nullptr) ||
+      (this->left == nullptr && this->rightThread == true) ||
       (this->right == nullptr && this->leftThread == true) ||
       (this->leftThread == true && this->rightThread == true)) {
     return true;
@@ -323,50 +340,19 @@ bool TNode::isLeaf() {
   return false;
 }
 
-//-----------------------------------------------------------------------------
-// threadedBST copy constructor
-// PRE: None
-// POST: a new threadedBST is made, separate but identical to original
-// threadedBST
-threadedBST::threadedBST(const threadedBST &oldBST) {
-  // indexes
-  int start = 1;
-  TNode *n = oldBST.getRoot();
-  int end = copyConstHelper(n);
-  int mid = (end + start) / 2;
-
-  // create node, attach to this->root
-  this->root = new TNode(mid);
-  constructorHelper(start, mid);
-  constructorHelper(mid + 1, end);
-}
-
-//-------------------------------------------------------------------------------
-// traverses through right branches
-// returns largest integer in tree
-int threadedBST::copyConstHelper(TNode *treePtr) {
-  while (treePtr->right != nullptr) {
-    treePtr = treePtr->right;
-  }
-  return (treePtr->data);
-}
-
 //---------------------------------------------------------------------------------
 TNode *threadedBST::getRoot() const { return this->root; }
-/*
+
 //-----------------------------------------------------------------------------
-ostream TNode::display(ostream &os) {
-  return << this->data << ", ";
-}
+void TNode::display() { cout << this->data << ", "; }
 
 //-----------------------------------------------------------------------------
 void threadedBST::printInOrder(TNode *treePtr) {
   if (treePtr->isLeaf()) {
-    treePtr->display(ostream &os); // out
+    treePtr->display(); // out
     return;
   }
   printInOrder(treePtr->left);  // a
   treePtr->display();           // b
   printInOrder(treePtr->right); // c
 }
-*/
