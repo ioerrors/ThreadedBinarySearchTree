@@ -17,6 +17,12 @@ void test1() {
   cout << "Test 3: N = 8 " << endl;
   threadedBST threaded3(8);
   cout << threaded3 << endl;
+  threadedBST threadedCopy(threaded1);
+  cout << threadedCopy << endl;
+  threadedBST threadedCopy2(threaded2);
+  cout << threadedCopy2 << endl;
+  threadedBST threadedCopy3(threaded3);
+  cout << threadedCopy3 << endl;
 }
 
 int main() {

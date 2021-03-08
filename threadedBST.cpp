@@ -23,48 +23,19 @@ using namespace std;
 // display all the elements of the threadedBST
 // PRE: threadedBST &list exists
 // POST: ostream has formatted output of threadedBST, example:
-ostream &operator<<(ostream &os, const threadedBST &threadB) {
+ostream &operator<<(ostream &os, const threadedBST &threadA) {
   // return if the tree is empty
-  if (threadB.root == nullptr) {
+  if (threadA.root == nullptr) {
     return os;
   }
-  // print the threadB.root node
-  os << threadB.root->data << " ";
-  // create two empty queues and enqueue threadB.root's left and
-  // right child, respectively
-  queue<TNode *> q1, q2;
-  q1.push(threadB.root->left);
-  q2.push(threadB.root->right);
-  // loop till queue is empty
-  while (!q1.empty()) {
-    // calculate the total number of TNodes at the current level
-    int n = q1.size();
-    // process every TNode of the current level
-    while (n--) {
-      // dequeue front TNode from the first queue and print it
-      TNode *x = q1.front();
-      q1.pop();
-      os << x->data << " ";
-      // enqueue left and right child of `x` to the first queue
-      if (x->left) {
-        q1.push(x->left);
-      }
-      if (x->right) {
-        q1.push(x->right);
-      }
-      // dequeue front TNode from the second queue and print it
-      TNode *y = q2.front();
-      q2.pop();
-      os << y->data << " ";
-      // enqueue right and left child of `y` to the second queue
-      if (y->right) {
-        q2.push(y->right);
-      }
-      if (y->left) {
-        q2.push(y->left);
-      }
-    }
+  if (threadA.root->isLeaf()) {
+    os << threadA.root->data << ", "; // out
+    return os;
   }
+  // TODO: Fix this.
+  os << threadA.root->left << ", ";  // a
+  os << threadA.root->data << ", ";  // b
+  os << threadA.root->right << ", "; // c
   return os;
 }
 
@@ -353,15 +324,49 @@ bool TNode::isLeaf() {
 }
 
 //-----------------------------------------------------------------------------
-void TNode::display() { cout << this->data << ", "; }
+// threadedBST copy constructor
+// PRE: None
+// POST: a new threadedBST is made, separate but identical to original
+// threadedBST
+threadedBST::threadedBST(const threadedBST &oldBST) {
+  // indexes
+  int start = 1;
+  TNode *n = oldBST.getRoot();
+  int end = copyConstHelper(n);
+  int mid = (end + start) / 2;
+
+  // create node, attach to this->root
+  this->root = new TNode(mid);
+  constructorHelper(start, mid);
+  constructorHelper(mid + 1, end);
+}
+
+//-------------------------------------------------------------------------------
+// traverses through right branches
+// returns largest integer in tree
+int threadedBST::copyConstHelper(TNode *treePtr) {
+  while (treePtr->right != nullptr) {
+    treePtr = treePtr->right;
+  }
+  return (treePtr->data);
+}
+
+//---------------------------------------------------------------------------------
+TNode *threadedBST::getRoot() const { return this->root; }
+/*
+//-----------------------------------------------------------------------------
+ostream TNode::display(ostream &os) {
+  return << this->data << ", ";
+}
 
 //-----------------------------------------------------------------------------
 void threadedBST::printInOrder(TNode *treePtr) {
   if (treePtr->isLeaf()) {
-    treePtr->display(); // out
+    treePtr->display(ostream &os); // out
     return;
   }
   printInOrder(treePtr->left);  // a
   treePtr->display();           // b
   printInOrder(treePtr->right); // c
 }
+*/
