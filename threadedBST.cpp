@@ -63,7 +63,7 @@ bool iteratorBST::next() {
       while (!current->getLeftThread() && current->getLeft() != nullptr) {
         current = current->getLeft();
       }
-    } else {
+    } else if (current != nullptr && current->getRight() != nullptr) {
       current = current->getRight();
     }
   } else {
@@ -75,7 +75,7 @@ bool iteratorBST::next() {
 //-----------------------------------------------------------------------------
 // postorder traversal by one step
 bool iteratorBST::prev() {
-  if (current->getLeft() != nullptr) {
+  if (current != nullptr && current->getLeft() != nullptr) {
     if (current->getRight() != nullptr && current->getLeft() != nullptr &&
         !current->getLeftThread() && !current->getRightThread()) {
       current = current->getLeft();
