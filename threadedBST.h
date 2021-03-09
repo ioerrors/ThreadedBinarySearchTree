@@ -45,17 +45,58 @@ private:
   bool isLeaf() const;
 
   //print out node's data
-  void display();
+  void display(int x);
+public:
+  // returns data
+  int getData();
 
+  // returns left child
+  TNode* getLeft();
+
+  // returns right child
+  TNode* getRight();
+
+  // returns thread status of right child
+  bool getRightThread();
+  // returns thread status of left child
+  bool getLeftThread();
 };
 
+class iteratorBST {
+  friend class threadedBST;
+  friend class TNode;
+  friend ostream &operator<<(ostream &os, const threadedBST &list);
+  friend bool operator++(iteratorBST &itty, int);
+  friend void operator--(iteratorBST itty);
+private:
+  //Iterator pointer node
+  TNode* current;
+
+public:
+  explicit iteratorBST(TNode* root);
+
+  //inorder traversal by one step
+  bool next();
+
+  //post order? traversal by one step
+  bool prev();
+
+  //check if at max of tree
+  bool hasNext();
+
+  //returns current position of iterator
+  TNode* getCurrent() const;
+};
 //-----------------------------------------------------------------------------
 class threadedBST {
   // display with level
   friend ostream &operator<<(ostream &os, const threadedBST &list);
 
 private:
-  
+ 
+  // root node
+  TNode* root;
+
   // addHelper()
   bool addHelper(int data, TNode* node);
   
@@ -71,10 +112,6 @@ private:
   // helps create a copy of another threadedBST
   int copyConstHelper(TNode* treePtr);
 
-
-  // returns the root of the threadedBST
-  TNode* getRoot() const;
-  
   /*
   traverse through tree inorder
   calls display() at each node to print out data
@@ -83,20 +120,6 @@ private:
 
   //places threads where applicable
   void addThread(TNode* treePtr);
-
-
-  //ALERT: COPIED CODE
-  /* Traverses this binary tree in preorder (inorder, postorder) and
-  calls the function visit once for each node.
-  @param visit A client-defined function that performs an operation on
-  or with the data in each visited node. 
-    
-  void preorderTraverse( void visit(int&)) const;
-    
-  void inorderTraverse( void visit(int&)) const;
-    
-  void postorderTraverse( void visit(int&)) const;
-  */
 
   /*
   searches tree for node with target data
@@ -109,13 +132,13 @@ public:
   // default threadedBST is empty
   explicit threadedBST(int n);
 
-  // root node
-  TNode* root;
-
+  //void inorderTraverse(void visit(int&)) const; ??
   //copy constructor
   threadedBST(const threadedBST& oldBST);
 
-
+  
+  // returns the root of the threadedBST
+  TNode* getRoot() const;
 
   // destructor
   virtual ~threadedBST();
