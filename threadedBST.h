@@ -101,7 +101,7 @@ private:
   bool addHelper(int data, TNode* node);
   
   // removeHelper()
-  bool removeHelper(int data, TNode* node);
+  bool removeHelper(int data, TNode* node, TNode* parent);
   
   // containsHelper()
   bool containsHelper(int target, TNode* node) const;
