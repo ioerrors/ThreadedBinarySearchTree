@@ -15,21 +15,6 @@
 using namespace std;
 
 //-----------------------------------------------------------------------------
-// << operator
-// display all the elements of the threadedBST
-// PRE: threadedBST &list exists
-// POST: ostream has formatted output of threadedBST, example:
-ostream &operator<<(ostream &os, const threadedBST &threadA) {
-  // return if the tree is empty
-  if (threadA.root == nullptr) {
-    return os;
-  }
-  // use iterator?
-  os << threadA.root << ", "; // out
-  return os;
-}
-
-//-----------------------------------------------------------------------------
 // TNode CONSTRUCTOR
 // PRE: this TNode does not exist
 // POST: this TNode is created and data is set
@@ -40,6 +25,111 @@ TNode::TNode(int data) : data{data} {
   rightThread = false;
   leftThread = false;
 }
+
+// returns data
+int TNode::getData() { return data; }
+
+// returns left child
+TNode *TNode::getLeft() { return left; }
+
+// returns right child
+TNode *TNode::getRight() { return right; }
+
+// returns thread status of right child
+bool TNode::getRightThread() { return rightThread; }
+
+// returns thread status of left child
+bool TNode::getLeftThread() { return leftThread; }
+
+//-----------------------------------------------------------------------------
+// Iterator CONSTRUCTOR
+// PRE: this Iterator does not exist
+// POST: this Iterator is created and is set
+//       to leftmost node
+iteratorBST::iteratorBST(TNode *root) {
+  current = root;
+  while (current->getLeft() != nullptr) {
+    current = current->getLeft();
+  }
+}
+
+//-----------------------------------------------------------------------------
+// inorder traversal by one step
+bool iteratorBST::next() {
+  if (hasNext()) {
+    if (current->getRight() != nullptr && current->getLeft() != nullptr &&
+        !current->getLeftThread() && !current->getRightThread()) {
+      current = current->getRight();
+      while (!current->getLeftThread() && current->getLeft() != nullptr) {
+        current = current->getLeft();
+      }
+    } else {
+      current = current->getRight();
+    }
+  } else {
+    return false;
+  }
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+// postorder traversal by one step
+bool iteratorBST::prev() {
+  if (current->getLeft() != nullptr) {
+    if (current->getRight() != nullptr && current->getLeft() != nullptr &&
+        !current->getLeftThread() && !current->getRightThread()) {
+      current = current->getLeft();
+      while (!current->getRightThread() && current->getRight() != nullptr) {
+        current = current->getRight();
+      }
+      return true;
+    } else {
+      current = current->getLeft();
+    }
+  } else {
+    return false;
+  }
+  return true;
+}
+
+// check if at max of tree
+bool iteratorBST::hasNext() { return current->getRight() != nullptr; }
+
+TNode *iteratorBST::getCurrent() const { return current; }
+
+//-----------------------------------------------------------------------------
+// << operator
+// display all the elements of the threadedBST
+// PRE: threadedBST &bst exists
+// POST: ostream has formatted output of threadedBST, example:
+ostream &operator<<(ostream &os, const threadedBST &bst) {
+  // return if the tree is empty
+  if (bst.getRoot() == nullptr) {
+    return os;
+  }
+  iteratorBST itty(bst.getRoot());
+  os << itty.getCurrent()->getData() << " ";
+  // use iteratorBST?
+  while (itty.hasNext()) {
+    itty++;
+    os << itty.getCurrent()->getData() << " ";
+  }
+  return os;
+}
+
+//-----------------------------------------------------------------------------
+// ++ operator
+// move iterator by one inorder
+// PRE: threadedBST &bst exists, iterator exists
+// POST: iterator now points at next node inorder:
+bool operator++(iteratorBST &itty, int) { return itty.next(); }
+
+//-----------------------------------------------------------------------------
+// -- operator
+// move iterator by one postorder
+// PRE: threadedBST bst exists, iterator exists
+// POST: iterator now points at next node postorder (prev node inorder):
+void operator--(iteratorBST &itty) { itty.prev(); }
 
 //-----------------------------------------------------------------------------
 // threadedBST CONSTRUCTOR
@@ -63,6 +153,7 @@ threadedBST::threadedBST(int n) {
   // add threads
   addThread(this->root);
 }
+
 void threadedBST::constructorHelper(int start, int end) {
   if (start <= end) {
     // pick middle index
@@ -336,8 +427,8 @@ bool TNode::isLeaf() const {
 TNode *threadedBST::getRoot() const { return this->root; }
 
 //-----------------------------------------------------------------------------
-void TNode::display() { cout << this->data << ", "; }
-
+void TNode::display(int x) { cout << x << ", "; }
+/*
 //-----------------------------------------------------------------------------
 void threadedBST::printInOrder(TNode *treePtr) {
   if (treePtr->isLeaf()) {
@@ -348,3 +439,23 @@ void threadedBST::printInOrder(TNode *treePtr) {
   treePtr->display();           // b
   printInOrder(treePtr->right); // c
 }
+
+
+void threadedBST::inorderTraverse(void visit(int&)) const {
+  if (root != nullptr) {
+    inorderTraverse(visit, root->left);
+    int item = root->data;
+    visit(item);
+    inorderTraverse(visit, root->right);
+  } // end if
+}
+
+void threadedBST::inorderTraverse(void visit(int&), TNode* treePtr) const {
+  if (treePtr != nullptr) {
+    inorderTraverse(visit, treePtr->left);
+    int item = treePtr->data;
+    visit(item);
+    inorderTraverse(visit, treePtr->right);
+  } // end if
+}
+*/
