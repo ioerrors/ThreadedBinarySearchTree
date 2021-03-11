@@ -28,7 +28,7 @@ int input() {
   cout << prompt;
   cin >> n;
   while (n < 0) {
-    cout << prompt << endl;
+    cout << prompt;
     cin >> n;
   }
   return n;
