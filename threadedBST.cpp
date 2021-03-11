@@ -193,6 +193,13 @@ threadedBST::threadedBST(const threadedBST &oldBST) {
 
   // add threads
   addThread(this->root);
+
+  // for loop removing nodes not in oldBST
+  for (int i = 1; i < end; i++) {
+    if (!oldBST.contains(i)) {
+      this->remove(i);
+    }
+  }
 }
 
 //-------------------------------------------------------------------------------
@@ -471,34 +478,3 @@ TNode *threadedBST::getRoot() const { return this->root; }
 
 //-----------------------------------------------------------------------------
 void TNode::display(int x) { cout << x << ", "; }
-/*
-//-----------------------------------------------------------------------------
-void threadedBST::printInOrder(TNode *treePtr) {
-  if (treePtr->isLeaf()) {
-    treePtr->display(); // out
-    return;
-  }
-  printInOrder(treePtr->left);  // a
-  treePtr->display();           // b
-  printInOrder(treePtr->right); // c
-}
-
-
-void threadedBST::inorderTraverse(void visit(int&)) const {
-  if (root != nullptr) {
-    inorderTraverse(visit, root->left);
-    int item = root->data;
-    visit(item);
-    inorderTraverse(visit, root->right);
-  } // end if
-}
-
-void threadedBST::inorderTraverse(void visit(int&), TNode* treePtr) const {
-  if (treePtr != nullptr) {
-    inorderTraverse(visit, treePtr->left);
-    int item = treePtr->data;
-    visit(item);
-    inorderTraverse(visit, treePtr->right);
-  } // end if
-}
-*/
