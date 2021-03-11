@@ -67,7 +67,7 @@ class iteratorBST {
   friend class TNode;
   friend ostream &operator<<(ostream &os, const threadedBST &list);
   friend bool operator++(iteratorBST &itty, int);
-  friend void operator--(iteratorBST itty);
+  friend bool operator--(iteratorBST &itty, int);
 private:
   //Iterator pointer node
   TNode* current;
