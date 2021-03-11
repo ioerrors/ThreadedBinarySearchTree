@@ -6,6 +6,7 @@
 // test comment
 using namespace std;
 
+
 void removeEvens(threadedBST &threadedCopy) {
   iteratorBST itty(threadedCopy.getRoot());
   int cur;
@@ -60,6 +61,7 @@ int main() {
 /*
 void testConstructors() {
   cout << "Test1: N = 7 " << endl;
+  cout << endl << "Test1: N = 7 " << endl;
   threadedBST threaded1(7);
   cout << threaded1 << endl;
   cout << "Test 2: N = 19 " << endl;
@@ -120,5 +122,7 @@ void testRemoves() {
   cout << "Delete all evens from copy 4, N = 30:" << endl;
   removeEvens(threadedCopy4);
   cout << threadedCopy4 << endl;
+
+
 }
 */
