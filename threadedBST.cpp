@@ -30,10 +30,20 @@ TNode::TNode(int data) : data{data} {
 int TNode::getData() { return data; }
 
 // returns left child
-TNode *TNode::getLeft() { return left; }
+TNode *TNode::getLeft() {
+  if (left == nullptr) {
+    return nullptr;
+  }
+  return left;
+}
 
 // returns right child
-TNode *TNode::getRight() { return right; }
+TNode *TNode::getRight() {
+  if (right == nullptr) {
+    return nullptr;
+  }
+  return right;
+}
 
 // returns thread status of right child
 bool TNode::getRightThread() { return rightThread; }
@@ -94,10 +104,19 @@ bool iteratorBST::prev() {
 
 // check if at max of tree
 bool iteratorBST::hasNext() {
-  return current != nullptr && current->getRight() != nullptr;
+  if (current == nullptr) {
+    return false;
+  } else {
+    return current->getRight() != nullptr;
+  }
 }
 
-TNode *iteratorBST::getCurrent() const { return current; }
+TNode *iteratorBST::getCurrent() const {
+  if (current != nullptr) {
+    return current;
+  }
+  return nullptr;
+}
 
 //-----------------------------------------------------------------------------
 // << operator
@@ -107,14 +126,15 @@ TNode *iteratorBST::getCurrent() const { return current; }
 ostream &operator<<(ostream &os, const threadedBST &bst) {
   // return if the tree is empty
   if (bst.getRoot() == nullptr) {
+    os << "empty tree";
     return os;
   }
-  iteratorBST itty(bst.getRoot());
-  os << itty.getCurrent()->getData() << " ";
+  iteratorBST iterate(bst.getRoot());
+  os << iterate.getCurrent()->getData() << " ";
   // use iteratorBST?
-  while (itty.hasNext()) {
-    itty++;
-    os << itty.getCurrent()->getData() << " ";
+  while (iterate.hasNext()) {
+    iterate++;
+    os << iterate.getCurrent()->getData() << " ";
   }
   return os;
 }
@@ -131,7 +151,7 @@ bool operator++(iteratorBST &itty, int) { return itty.next(); }
 // move iterator by one postorder
 // PRE: threadedBST bst exists, iterator exists
 // POST: iterator now points at next node postorder (prev node inorder):
-void operator--(iteratorBST &itty) { itty.prev(); }
+bool operator--(iteratorBST &itty) { return itty.prev(); }
 
 //-----------------------------------------------------------------------------
 // threadedBST CONSTRUCTOR
@@ -222,7 +242,21 @@ int threadedBST::copyConstHelper(TNode *treePtr) {
 // POST: threadedBST is deleted, all memory deallocated, no leaks
 threadedBST::~threadedBST() {
   // need to delete individual nodes
-  clear(this->root);
+  clear(this->root); // 9
+}
+
+void threadedBST::clear(TNode *subTreePtr) {
+  if (subTreePtr != nullptr) {
+    if (subTreePtr->left != nullptr && !subTreePtr->leftThread) {
+      clear(subTreePtr->left);
+    }
+    if (subTreePtr->right != nullptr && !subTreePtr->rightThread) {
+      clear(subTreePtr->right);
+    }
+    subTreePtr->left = nullptr;
+    subTreePtr->right = nullptr;
+    delete subTreePtr;
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -240,6 +274,9 @@ bool threadedBST::removeHelper(int value, TNode *node, TNode *parent) {
       // at this point data === node->data
       // check if leaf, if so, remove.
       if (node->isLeaf()) {
+        if (parent == node) {
+          root = nullptr;
+        }
         if (parent->right == node) {
           parent->right = node->right;
           parent->rightThread = node->rightThread;
@@ -255,6 +292,18 @@ bool threadedBST::removeHelper(int value, TNode *node, TNode *parent) {
         TNode *deleteMe = node->right;
         node->right = deleteMe->right;
         node->rightThread = deleteMe->rightThread;
+        if (!deleteMe->leftThread) {
+          node->left = deleteMe->left;
+          TNode *findThread = deleteMe;
+          while (!findThread->leftThread) {
+            findThread = findThread->left;
+          }
+          findThread->leftThread = false;
+          findThread->left = nullptr;
+        } else {
+          node->left = nullptr;
+          node->leftThread = false;
+        }
         node->data = deleteMe->data;
         delete deleteMe;
       }
@@ -264,6 +313,18 @@ bool threadedBST::removeHelper(int value, TNode *node, TNode *parent) {
         TNode *deleteMe = node->left;
         node->left = deleteMe->left;
         node->leftThread = deleteMe->leftThread;
+        if (!deleteMe->rightThread) {
+          node->right = deleteMe->right;
+          TNode *findThread = deleteMe;
+          while (!findThread->rightThread) {
+            findThread = findThread->right;
+          }
+          findThread->rightThread = false;
+          findThread->right = nullptr;
+        } else {
+          node->right = nullptr;
+          node->rightThread = false;
+        }
         node->data = deleteMe->data;
         delete deleteMe;
       }
@@ -373,12 +434,12 @@ bool threadedBST::containsHelper(int target, TNode *node) const {
     if (target == node->data) {
       return true;
     }
-    if (node->data < target && node->right != nullptr &&
+    if (target > node->data && node->right != nullptr &&
         node->rightThread == false) {
       node = node->right;
       return containsHelper(target, node);
     }
-    if (node->data > target && node->left != nullptr &&
+    if (target < node->data && node->left != nullptr &&
         node->leftThread == false) {
       node = node->left;
       return containsHelper(target, node);
@@ -394,21 +455,6 @@ bool threadedBST::isEmpty() {
   }
   return false;
 }
-
-void threadedBST::clear(TNode *subTreePtr) {
-  if (subTreePtr != nullptr) {
-    if (!subTreePtr->leftThread) {
-      clear(subTreePtr->left);
-    }
-    if (!subTreePtr->rightThread) {
-      clear(subTreePtr->right);
-    }
-    subTreePtr->left = nullptr;
-    subTreePtr->right = nullptr;
-    delete subTreePtr;
-  }
-}
-//
 
 //-----------------------------------------------------------------------------
 void threadedBST::addThread(TNode *treePtr) {
