@@ -44,7 +44,6 @@ private:
   // true if node is a leaf
   bool isLeaf() const;
 
-public:
   //print out node's data
   void display(int x);
 public:
@@ -129,16 +128,9 @@ private:
   */
   TNode* findNode(int target, TNode* treePtr);
 
-  // copy constructor helper
-  int copyConstHelper(TNode* treePtr);
-
-  // root node
-  TNode* root;
-
 public:
   // default threadedBST is empty
   explicit threadedBST(int n);
-
 
   //void inorderTraverse(void visit(int&)) const; ??
   //copy constructor
@@ -165,10 +157,6 @@ public:
 
   // clear, destroys 
   void clear(TNode* subTreePtr);
-
-  //getter
-  //returns root of Tree
-  TNode* getRoot();
 
 };
 
