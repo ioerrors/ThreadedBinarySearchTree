@@ -82,26 +82,6 @@ bool iteratorBST::next() {
   return true;
 }
 
-//-----------------------------------------------------------------------------
-// postorder traversal by one step
-bool iteratorBST::prev() {
-  if (current != nullptr && current->getLeft() != nullptr) {
-    if (current->getRight() != nullptr && current->getLeft() != nullptr &&
-        !current->getLeftThread() && !current->getRightThread()) {
-      current = current->getLeft();
-      while (!current->getRightThread() && current->getRight() != nullptr) {
-        current = current->getRight();
-      }
-      return true;
-    } else {
-      current = current->getLeft();
-    }
-  } else {
-    return false;
-  }
-  return true;
-}
-
 // check if at max of tree
 bool iteratorBST::hasNext() {
   if (current == nullptr) {
@@ -145,13 +125,6 @@ ostream &operator<<(ostream &os, const threadedBST &bst) {
 // PRE: threadedBST &bst exists, iterator exists
 // POST: iterator now points at next node inorder:
 bool operator++(iteratorBST &itty, int) { return itty.next(); }
-
-//-----------------------------------------------------------------------------
-// -- operator
-// move iterator by one postorder
-// PRE: threadedBST bst exists, iterator exists
-// POST: iterator now points at next node postorder (prev node inorder):
-bool operator--(iteratorBST &itty) { return itty.prev(); }
 
 //-----------------------------------------------------------------------------
 // threadedBST CONSTRUCTOR
@@ -521,6 +494,3 @@ bool TNode::isLeaf() const {
 
 //---------------------------------------------------------------------------------
 TNode *threadedBST::getRoot() const { return this->root; }
-
-//-----------------------------------------------------------------------------
-void TNode::display(int x) { cout << x << ", "; }

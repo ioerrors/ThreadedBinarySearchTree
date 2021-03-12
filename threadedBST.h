@@ -44,8 +44,6 @@ private:
   // true if node is a leaf
   bool isLeaf() const;
 
-  //print out node's data
-  void display(int x);
 public:
   // returns data
   int getData();
@@ -67,7 +65,7 @@ class iteratorBST {
   friend class TNode;
   friend ostream &operator<<(ostream &os, const threadedBST &list);
   friend bool operator++(iteratorBST &itty, int);
-  friend bool operator--(iteratorBST &itty, int);
+  
 private:
   //Iterator pointer node
   TNode* current;
@@ -77,9 +75,6 @@ public:
 
   //inorder traversal by one step
   bool next();
-
-  //post order? traversal by one step
-  bool prev();
 
   //check if at max of tree
   bool hasNext();
