@@ -32,6 +32,7 @@ void bigTest() {
   int n = input();
   while (n > 0) {
     threadedBST threaded(n);
+    assert(!threaded.isEmpty());
     threadedBST threadedCopy(threaded);
     //<< operator uses the iterator class
     cout << "original threadedBST, N = " << n << endl;
@@ -52,7 +53,6 @@ void bigTest() {
   }
 }
 
-/*
 void testConstructors() {
   cout << "Test1: N = 7 " << endl;
   threadedBST threaded1(7);
@@ -73,7 +73,6 @@ void testConstructors() {
   threadedBST threadedCopy3(threaded3);
   cout << threadedCopy3 << endl;
 }
-
 
 void testRemoves() {
   cout << "Test1: N = 7 " << endl;
@@ -128,12 +127,10 @@ void testRemoves() {
   cout << threadedCopy4 << endl;
 }
 
-*/
-
 int main() {
-  // testConstructors();
-  // testRemoves();
-  bigTest();
+  testConstructors();
+  testRemoves();
+  // bigTest();
   cout << "Done." << endl;
   return 0;
 }
