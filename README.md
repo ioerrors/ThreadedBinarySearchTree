@@ -3,6 +3,8 @@ by Micah Rice and Bruce Nguyen
 
 
 OUR NOTES:
+
+
 -- use create-output.sh to compile and run
 
 -- output.txt contains the output of a typical create-output.sh run
