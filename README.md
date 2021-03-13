@@ -1,12 +1,15 @@
 Assignment5 CSS 342 C University of Washington
 
+--use create-output.sh to compile and run
 
-Note 3/08/2021
-Currently constructs properly with threads. remove untested. no iterator yet.
+--Compile With: C++ 11
 
-Note: 2/28/2021
-Currently just placeholder code from assignment 4
+-- if terminal shell seems to stop, it is waiting for input. enter as many integers as 
+   desired, enter 0 to stop and continue execution. 
 
+--comment out userDefinedTest to avoid user input during create-output.sh execution 
+
+--No changes made to clang-tidy file given in Assignment 3 starter files 
 
 
 # Threaded Binary Search Tree  
