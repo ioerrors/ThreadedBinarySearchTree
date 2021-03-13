@@ -1,5 +1,7 @@
 Assignment5 CSS 342 C University of Washington
 by Micah Rice and Bruce Nguyen
+
+
 OUR NOTES:
 -- use create-output.sh to compile and run
 
