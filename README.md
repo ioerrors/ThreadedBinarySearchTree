@@ -7,9 +7,9 @@ Assignment5 CSS 342 C University of Washington
 -- if terminal shell seems to stop, it is waiting for input. enter as many integers as 
    desired, enter 0 to stop and continue execution. 
 
---comment out userDefinedTest to avoid user input during create-output.sh execution 
+-- comment out userDefinedTest to avoid user input during create-output.sh execution 
 
---No changes made to clang-tidy file given in Assignment 3 starter files 
+-- No changes made to clang-tidy file given in Assignment 3 starter files 
 
 
 # Threaded Binary Search Tree  
