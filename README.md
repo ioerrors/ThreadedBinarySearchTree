@@ -2,7 +2,7 @@ Assignment5 CSS 342 C University of Washington
 
 --use create-output.sh to compile and run
 
---Compile With: C++ 11
+--compile with: C++ 11
 
 -- if terminal shell seems to stop, it is waiting for input. enter as many integers as 
    desired, enter 0 to stop and continue execution. 
