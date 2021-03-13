@@ -23,9 +23,10 @@ OUR NOTES:
 
 -- No changes made to clang-tidy file given in Assignment 3 starter files
 
-
+---------------------------------------------------------------------------------------------------------------------------
 
 Threaded Binary Search Tree
+
 Since a binary search tree with N nodes has N + 1 NULL pointers, half the space allocated in a binary search tree for pointer information is wasted. Suppose that if a node has a NULL left child, we make its left child pointer link to its inorder predecessor, and if a node has a NULL right child, we make its right child pointer link to its inorder successor. This is known as a threaded tree and the extra links are called threads.
 
 Note: Your threadedBST doesn't need to be Complete or Self-balancing but it requires to be balanced. You can achieve that at the point of tree creation by the order you assemble the tree.
