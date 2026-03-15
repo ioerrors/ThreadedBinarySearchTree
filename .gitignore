@@ -1,0 +1,51 @@
+# Build directories
+build/
+build-*/
+cmake-build-*/
+
+# CMake / generated build metadata
+CMakeCache.txt
+CMakeFiles/
+compile_commands.json
+Testing/
+CTestTestfile.cmake
+cmake_install.cmake
+build.ninja
+.ninja_deps
+.ninja_log
+
+# Binaries / objects
+*.o
+*.obj
+*.a
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+tbst
+tbst_tests
+
+# Core dumps
+core
+core.*
+vgcore.*
+
+# Coverage
+*.gcda
+*.gcno
+*.gcov
+coverage.html
+coverage/
+build-coverage/
+
+# clangd / clang tooling
+.clangd/
+.cache/
+.clang-tidy-cache/
+
+# VS Code local workspace state
+.vscode/
+
+# Misc
+*.log

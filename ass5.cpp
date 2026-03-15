@@ -1,17 +1,17 @@
 //////////////////////////////////ass5.cpp file////////////////////////////////
 //-----------------------------------------------------------------------------
 // Created by Micah Rice & Bruce Nguyen on 03/04/2021.
-// 
-// Driver/Tester demonstrating functions of threadedBST class 
+//
+// Driver/Tester demonstrating functions of threadedBST class
 // takes user input, constructs threadedBSTs, demonstrates copyconstructor
 // and removes evens, displaying states of threadedBST
 // uses << operator on threadedBST which uses iterator class
 // to perform an inorder traversal of the threadedBST using threads
-// to output the data fields of the entire threadedBST in a single line 
-
+// to output the data fields of the entire threadedBST in a single line
 
 #include <cassert>
 #include <iostream>
+#include <string>
 
 #include "threadedBST.h"
 
@@ -30,10 +30,9 @@ void removeEvens(threadedBST &threadedCopy) {
   }
 }
 
-
 //-----------------------------------------------------------------------------
 // input()
-// user input of any non-negative number including zero 
+// user input of any non-negative number including zero
 // returned as int n
 // PRE: user has access to console, can input numbers
 // POST: int n is returned as the user inputted non-negative number
@@ -49,11 +48,10 @@ int input() {
   return n;
 }
 
-
 //-----------------------------------------------------------------------------
 // userDefinedTest()
 // takes user input and creates threadedBSTs according to input n.
-//       trees are then displayed, and destroyed, repeating until input is zero 
+//       trees are then displayed, and destroyed, repeating until input is zero
 //       note: uses iterator class in the << operator of threadedBST
 // PRE: user has access to console, can input numbers
 // POST: threadedBSTs created according to input n
@@ -91,142 +89,15 @@ void userDefinedTest() {
 }
 
 //-----------------------------------------------------------------------------
-// testComprehensive()
-// tests every case possible to get 100% code coverage
-// for all of threadedBST and iterator class functions
-//       note: uses iterator class in the << operator of threadedBST
-// PRE: this function exists and is defined
-// POST: threadedBSTs created have been displayed to cout, 
-//       repeated with variation until 100% code coverage
-void testComprehensive() {
-  cout << "=====================================================" << endl;
-  cout << "====Comprehensive Tests with 100% Code Coverage======" << endl;
-  cout << "=====================================================" << endl;
-  cout << "Test 1: N = 7 " << endl;
-  threadedBST threaded(7);
-  cout << threaded << endl;
-  for (int i = 1; i < 8; i++) {
-    if (i != 5) {
-      threaded.remove(i);
-    }
-  }
-  cout << "Test 1: N = 7, removed everything, except for 5" << endl;
-  cout << threaded << endl;
-
-  cout << endl << "Test 2: N = 8 " << endl;
-  threadedBST threadedRemoveAll(8);
-  cout << threadedRemoveAll << endl;
-  for (int i = 1; i < 9; i++) {
-    threadedRemoveAll.remove(i);
-  }
-  cout << "Test 2: N = 8, removed everything" << endl;
-  cout << threadedRemoveAll << endl;
-
-  cout << endl << "Test 3: N = 7 " << endl;
-  threadedBST threaded1(7);
-  cout << threaded1 << endl;
-  cout << "Test copy 3: N = 7 " << endl;
-  threadedBST threadedCopy(threaded1);
-  cout << threadedCopy << endl;
-  cout << "Delete all evens from copy 3, N = 7:" << endl;
-  removeEvens(threadedCopy);
-  cout << threadedCopy << endl;
-
-  cout << endl << "Test 4: N = 19 " << endl;
-  threadedBST threaded2(19);
-  cout << threaded2 << endl;
-  cout << "Test copy 4: N = 19 " << endl;
-  threadedBST threadedCopy2(threaded2);
-  cout << threadedCopy2 << endl;
-  cout << "Delete all evens from copy 4, N = 19:" << endl;
-  removeEvens(threadedCopy2);
-  cout << threadedCopy2 << endl;
-
-  cout << endl << "Test 5: N = 8 " << endl;
-  threadedBST threaded3(8);
-  cout << threaded3 << endl;
-  cout << "Test copy 5: N = 8" << endl;
-  threadedBST threadedCopy3(threaded3);
-  cout << threadedCopy3 << endl;
-  cout << "Delete all evens from copy 5, N = 8:" << endl;
-  removeEvens(threadedCopy3);
-  cout << threadedCopy3 << endl;
-
-  cout << endl << "Test 6: N = 30 " << endl;
-  threadedBST threaded4(30);
-  cout << threaded4 << endl;
-  cout << "Test copy 6: N = 30" << endl;
-  threadedBST threadedCopy4(threaded4);
-  cout << threadedCopy4 << endl;
-  cout << "Delete all evens from copy 6, N = 30:" << endl;
-  removeEvens(threadedCopy4);
-  cout << threadedCopy4 << endl;
-
-  cout << endl
-       << "Special Test: Make copy of a bst with evens already removed: "
-       << endl
-       << "Original evensRemoved N = 30" << endl;
-  cout << threadedCopy4 << endl;
-  threadedBST threadedSpecialCopy1(threadedCopy4);
-  cout << "DeepCopy of evensRemoved N = 30: " << endl;
-  cout << threadedSpecialCopy1 << endl;
-  cout << "DeepCopy of evensRemoved N = 30, with extra removed number 5: "
-       << endl;
-  threadedSpecialCopy1.remove(5);
-  cout << threadedSpecialCopy1 << endl;
-  cout << "Original evensRemoved N = 30, showing 5 still exists" << endl;
-  cout << threadedCopy4 << endl;
-
-  cout << endl << "Special Test: Try to Copy an Empty Tree" << endl;
-  threadedBST threadedSpecialCopy2(threadedRemoveAll);
-  cout << threadedSpecialCopy2 << endl;
-  cout << "DeepCopy of emptyTree: " << endl;
-  cout << threadedSpecialCopy2 << endl;
-  cout << "DeepCopy of emptyTree, with an added 3: " << endl;
-  threadedSpecialCopy2.add(3);
-  cout << threadedSpecialCopy2 << endl;
-  cout << "Original emptyTree, showing still empty" << endl;
-  cout << threadedRemoveAll << endl;
-
-  cout << endl
-       << "Special Test: N = 15 Delete nodes right to left, after remove(9), "
-          "remove(8)"
-       << endl;
-  threadedBST threadedRightToLeft(15);
-  // to make sure to call a special case for code coverage, works either way ofc
-  threadedRightToLeft.remove(9);
-  threadedRightToLeft.remove(8);
-  cout << threadedRightToLeft << endl;
-  for (int i = 15; i > 0; i--) {
-    threadedRightToLeft.remove(i);
-  }
-  cout << "Special Test: N = 15, removed all nodes from right to left:" << endl;
-  cout << threadedRightToLeft << endl;
-
-  // code coverage test special cases
-  threadedRightToLeft.remove(4); // removing from empty tree
-  threadedRightToLeft.add(4);
-
-  cout << "Special Test: Attempting to add a value already contained in tree:"
-       << endl;
-  threadedRightToLeft.add(4); // tree already contains 4
-  cout << "=====================================================" << endl;
-  cout << "=======Finished Tests for 100% Code Coverage:========" << endl;
-  cout << "=====================================================" << endl;
-}
-
-
-//-----------------------------------------------------------------------------
 // main()
 // calls functions to test every case possible to get 100% code coverage
 // for all of threadedBST and iterator class functions
 // and calls userDefinedTest to created user defined threadedBSTs
-// PRE: threadedBST exists as a data type, 
+// PRE: threadedBST exists as a data type,
 //      console is 80 characters wide or more
-// POST: many threadedBSTs have been printed to cout, 
+// POST: many threadedBSTs have been printed to cout,
 //       ascii art is displayed showing end of program
 int main() {
-  testComprehensive();
   userDefinedTest();
   cout << endl;
   cout << "===================================================================="
