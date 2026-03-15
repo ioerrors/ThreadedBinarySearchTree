@@ -12,10 +12,44 @@
 
 #include <cassert>
 #include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
 
 #include "threadedBST.h"
 
 using namespace std;
+
+static string inorderString(const threadedBST &tree) {
+     ostringstream out;
+     out << tree;
+     return out.str();
+}
+
+static void assertInorder(const threadedBST &tree,
+                                                                 const vector<int> &expectedValues) {
+     if (expectedValues.empty()) {
+          assert(inorderString(tree) == "empty tree");
+          return;
+     }
+
+     ostringstream expected;
+     for (int value : expectedValues) {
+          expected << value << " ";
+     }
+     assert(inorderString(tree) == expected.str());
+}
+
+static void assertContainsSet(const threadedBST &tree,
+                                                                           const vector<int> &present,
+                                                                           const vector<int> &absent) {
+     for (int value : present) {
+          assert(tree.contains(value));
+     }
+     for (int value : absent) {
+          assert(!tree.contains(value));
+     }
+}
 
 //-----------------------------------------------------------------------------
 // removeEvens()
@@ -210,6 +244,53 @@ void testComprehensive() {
   cout << "Special Test: Attempting to add a value already contained in tree:"
        << endl;
   threadedRightToLeft.add(4); // tree already contains 4
+
+     // Final-stage regression tests (assert-only; no output changes)
+     {
+          threadedBST original(12);
+          threadedBST copied(original);
+          threadedBST assigned(1);
+          assigned = original;
+
+          copied.remove(6);
+          copied.remove(7);
+          assigned.remove(8);
+          assigned.remove(9);
+
+          assertContainsSet(original, {6, 7, 8, 9, 12}, {});
+          assertContainsSet(copied, {8, 9, 12}, {6, 7});
+          assertContainsSet(assigned, {6, 7, 12}, {8, 9});
+
+          assigned = assigned;
+          assertContainsSet(assigned, {6, 7, 12}, {8, 9});
+     }
+
+     {
+          threadedBST leafCase(7);
+          assert(leafCase.remove(1));
+          assertContainsSet(leafCase, {2, 7}, {1});
+
+          threadedBST rightOnlyCase(15);
+          assert(rightOnlyCase.remove(8));
+          assert(rightOnlyCase.remove(9));
+          assert(rightOnlyCase.remove(10));
+          assertContainsSet(rightOnlyCase, {11, 12, 15}, {8, 9, 10});
+
+          threadedBST leftOnlyCase(15);
+          assert(leftOnlyCase.remove(8));
+          assert(leftOnlyCase.remove(7));
+          assert(leftOnlyCase.remove(6));
+          assertContainsSet(leftOnlyCase, {1, 2, 5}, {6, 7, 8});
+
+          threadedBST twoChildrenCase(15);
+          assert(twoChildrenCase.remove(4));
+          assertContainsSet(twoChildrenCase, {3, 5, 15}, {4});
+
+          threadedBST rootCase(3);
+          assert(rootCase.remove(2));
+          assertContainsSet(rootCase, {1, 3}, {2});
+          assertInorder(rootCase, {1, 3});
+     }
 
   cout << "=====================================================" << endl;
   cout << "=======Finished Tests for 100% Code Coverage:========" << endl;
