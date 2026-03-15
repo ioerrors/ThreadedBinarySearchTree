@@ -74,12 +74,7 @@ int TNode::getData() const { return data; }
 // PRE: this TNode object does exist
 // POST: returned this TNode's left child
 //       OR returned nullptr if TNode has no left child
-TNode *TNode::getLeft() const {
-  if (left == nullptr) {
-    return nullptr;
-  }
-  return left;
-}
+TNode *TNode::getLeft() const { return left; }
 
 //-----------------------------------------------------------------------------
 // getRight()
@@ -87,12 +82,7 @@ TNode *TNode::getLeft() const {
 // PRE: this TNode object does exist
 // POST: returned this TNode's right child
 //       OR returned nullptr if TNode has no right child
-TNode *TNode::getRight() const {
-  if (right == nullptr) {
-    return nullptr;
-  }
-  return right;
-}
+TNode *TNode::getRight() const { return right; }
 
 
 
@@ -137,7 +127,8 @@ bool TNode::isLeaf() const {
 //       next/prev/upLevel/downLevel are nullptr
 iteratorBST::iteratorBST(TNode *root) {
   current = root;
-  while (current->getLeft() != nullptr) {
+  if (current == nullptr) { return; }
+  while (current->getLeft() != nullptr && !current->getLeftThread()) {
     current = current->getLeft();
   }
 }
@@ -263,6 +254,22 @@ threadedBST::threadedBST(const threadedBST &oldBST) {
   } else {
     this->root = nullptr;
   }
+}
+
+//-----------------------------------------------------------------------------
+// threadedBST COPY ASSIGNMENT OPERATOR
+// Description: assigns rhs to this, replacing current content
+// PRE: both objects exist (rhs may be empty)
+// POST: this is an exact deep copy of rhs; previous content is freed
+threadedBST &threadedBST::operator=(const threadedBST &rhs) {
+  if (this != &rhs) {
+    clear(this->root);
+    this->root = nullptr;
+    threadedBST tmp(rhs);
+    this->root = tmp.root;
+    tmp.root = nullptr; // prevent tmp destructor from freeing the adopted tree
+  }
+  return *this;
 }
 
 //-----------------------------------------------------------------------------
@@ -450,7 +457,7 @@ bool threadedBST::removeHelper(int value, TNode *node, TNode *parent) {
 //       OR if data did exist in threadedBST, returned false
 //       (no duplicates allowed)
 // recursive helper function for add() --> addHelper()
-bool threadedBST::threadedBST::add(int value) {
+bool threadedBST::add(int value) {
   if (root == nullptr) {
     root = new TNode(value);
     return true;
@@ -587,7 +594,7 @@ TNode *threadedBST::findNode(int target, TNode *treePtr) const {
   if (target < treePtr->data && treePtr->left != nullptr) {
     return findNode(target, treePtr->left);
   }
-  if (target > treePtr->data && treePtr->left != nullptr) {
+  if (target > treePtr->data && treePtr->right != nullptr) {
     return findNode(target, treePtr->right);
   }
   return treePtr;

@@ -1,0 +1,3 @@
+/workspaces/ThreadedBinarySearchTree/build/CMakeFiles/tbst.dir
+/workspaces/ThreadedBinarySearchTree/build/CMakeFiles/edit_cache.dir
+/workspaces/ThreadedBinarySearchTree/build/CMakeFiles/rebuild_cache.dir

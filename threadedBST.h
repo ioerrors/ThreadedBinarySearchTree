@@ -10,9 +10,7 @@
 #ifndef ASS5_THREADEDBST_H
 #define ASS5_THREADEDBST_H
 
-#include <iostream>
-
-using namespace std;
+#include <iosfwd>
 
 // only threadedBST class can create TNode objects
 class threadedBST;
@@ -27,7 +25,7 @@ class TNode {
   //              and prints each node's data as it passes
   // PRE: threadedBST exists
   // POST: All contained integers between 1 and n are printed to output
-  friend ostream &operator<<(ostream &os, const threadedBST &list);
+  friend std::ostream &operator<<(std::ostream &os, const threadedBST &list);
 
 private:
   //---------------------------------------------------------------------------
@@ -115,7 +113,7 @@ class iteratorBST {
   //              and prints each node's data as it passes
   // PRE: threadedBST exists
   // POST: All contained integers between 1 and n are printed to output
-  friend ostream &operator<<(ostream &os, const threadedBST &list);
+  friend std::ostream &operator<<(std::ostream &os, const threadedBST &list);
 
 
   //---------------------------------------------------------------------------
@@ -178,7 +176,7 @@ class threadedBST {
   //              and prints each node's data as it passes
   // PRE: threadedBST exists
   // POST: All contained integers between 1 and n are printed to output
-  friend ostream &operator<<(ostream &os, const threadedBST &list);
+  friend std::ostream &operator<<(std::ostream &os, const threadedBST &list);
 
 private:
  
@@ -274,7 +272,8 @@ public:
   // POST: an exact copy of oldBST is constructed 
   threadedBST(const threadedBST& oldBST);
 
-  
+  threadedBST &operator=(const threadedBST &rhs);
+
   //---------------------------------------------------------------------------
   // getRoot()
   // Description: returns root pointer 
