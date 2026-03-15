@@ -1,86 +1,183 @@
-Assignment5 CSS 342 C University of Washington
-by Micah Rice and Bruce Nguyen
+# ThreadedBinarySearchTree
 
+A cleaned and refactored C++ implementation of a **threaded binary search tree**.
 
-OUR NOTES:
+This project started as a university assignment and was later refactored into a more maintainable, testable repository with:
 
+- a reproducible **VS Code devcontainer** setup
+- a **CMake + Ninja** build
+- a separate **test executable**
+- cleaner encapsulation and copy/delete logic
+- optional tooling for **Valgrind**, **clang-tidy**, **clang-format**, and **coverage**
 
--- use create-output.sh to compile and run
+The repo now contains a dedicated devcontainer config, `CMakeLists.txt`, a separate `tests.cpp`, and the original driver in `ass5.cpp`, which means the documented build flow should be based on CMake rather than the older ad hoc compile/script approach. 
 
--- output.txt contains the output of a typical create-output.sh run
+## Features
 
--- compile with: C++11 or C++14, either should work
+- Threaded binary search tree storing positive `int` values
+- Constructor builds a balanced BST from the range {1, 2, ..., n}
+- Inorder traversal using threads (no recursion or stack required)
+- Deep copy support
+- Insert and remove operations (values must be positive; no duplicates)
+- Separate test binary for regression coverage
+- Containerized development workflow for reproducibility
 
--- in using create-output.sh, if terminal shell seems to stop during a stage after clang-tidy, it is waiting for input
--- during create-output.sh it will do this during the 2 memory checks (g++ and valgrind) and the code coverage test,
--- since it runs the program independently each time, and each time the program is asking for input under the hood
--- even though no prompt will show, you can enter as many integers as desired for that memory or code coverage check,
--- then enter 0 to finish that run of the program and continue execution of the create-output.sh.
+## Project Layout
 
--- comment out userDefinedTest to avoid user input during create-output.sh execution, testComprehensive() will show memory/code coverage correctly
--- testComprehsive() does not show the original tree after the removeEvens() on the copied tree
--- as that was done in userDefinedTest(), and testComprehensive was for making sure to test everything else in the program not otherwise covered 
+```text
+.
+├── .devcontainer/
+│   ├── Dockerfile
+│   └── devcontainer.json
+├── .clang-format
+├── .gitignore
+├── CMakeLists.txt
+├── README.md
+├── ass5.cpp
+├── tests.cpp
+├── threadedBST.cpp
+└── threadedBST.h
+```
 
--- No changes made to clang-tidy file given in Assignment 3 starter files
+## Development Environment
 
----------------------------------------------------------------------------------------------------------------------------
+This repo is set up to work cleanly inside a VS Code devcontainer.
 
-Threaded Binary Search Tree
+### Host prerequisites
 
-Since a binary search tree with N nodes has N + 1 NULL pointers, half the space allocated in a binary search tree for pointer information is wasted. Suppose that if a node has a NULL left child, we make its left child pointer link to its inorder predecessor, and if a node has a NULL right child, we make its right child pointer link to its inorder successor. This is known as a threaded tree and the extra links are called threads.
+- Docker
+- VS Code
+- Dev Containers extension
 
-Note: Your threadedBST doesn't need to be Complete or Self-balancing but it requires to be balanced. You can achieve that at the point of tree creation by the order you assemble the tree.
+### Open in container
 
-Some extra clarifications: You are welcome to use AVT or self balancing functions if you like to practice your coding skills. However as I mentioned before your tree does not have to have that functionality.
+From the repo root:
 
-To achieve balanced tree for input 1....n you can take n/2 to be the root. then the mid point of the left subarray (1...n/2) would be the left child and the mid point of the right subarray (n/2.....n) would be the right child of the root. You repeat this process until all nodes are inserted.
+```sh
+code .
+```
 
-Building a Threaded Binary Search Tree
+Then in VS Code run:
 
-Start with the BST code from the Carrano textbook and augment it so that it correctly implements a ThreadedBST. You may do this by either modifying the existing code or by creating new classes derived from the TreeNode and BinarySearchTree classes in Carrano. Make sure that all of the public methods of BinarySearchTree are either correct as-is (when operating on a ThreadedBST) or are replaced (if you are modifying the existing classes) or overridden (if you are creating subclasses) by correct ThreadedBST methods. You may use a KeyType of int during your development process.
+> **Dev Containers: Reopen in Container**
 
-The threads can be used to make non-recursive inorder, preorder, and postorder traversals (or iterators without internal stacks). Implement an Inorder iterator class for your ThreadedBST. Your iterator should not use a stack; instead, it should use the thread links.
+The devcontainer includes the C++ toolchain and supporting tools used during the refactor, including clang, clangd, clang-tidy, clang-format, cmake, ninja, lldb, valgrind, and gcovr. The repo also includes the devcontainer configuration needed to rebuild that environment consistently.
 
-To test:
+## Build
 
-Implement your ThreadedBST and Inorder classes as described above. Then, write a program that uses these classes as follows. Your program should take a single command line argument: an integer, n, specifying the number of nodes to create in your tree. Your program should then create a ThreadedBST with KeyType being int and insert the numbers 1,2,…,n into that container in NON INCREMENTAL order (see above). It should then make a copy of that tree and delete all the even numbers from the copy. Finally, it should use iterators to perform an inorder traversal of each tree, outputting to cout each node’s contents (just put a single space between each node’s contents).
+Configure and build with CMake + Ninja:
 
-Unlike other assignments no initial code is given to you but you are free to use and/or modify any code from the Carrano textbook for this assignment from this repository https://github.com/pisanuw/books/tree/master/Carrano7
+```sh
+cmake -S . -B build -G Ninja
+cmake --build build
+```
 
-Hint: Make sure you think about the followings before you start on your implementation):
+This produces:
 
-How can we distinguish threads from real child pointers?
-What are the potential advantages of using threaded trees?
-What is your implementation? What are the sequence of steps you will go 
-through to change the BST implementation to a Threaded BST? 
-Which BST methods need to be modified/overridden and which will work as is?
-Pair Programming
-Pair programming refers to the practice whereby two programmers work together at one computer, collaborating on the same design, algorithm, code, or test. The pair is made up of a driver, who actively types at the computer or records a design; and a navigator, who watches the work of the driver and attentively identifies problems, asks clarifying questions, and makes suggestions.
+- `build/tbst` — the assignment/demo driver
+- `build/tbst_tests` — the regression test executable
 
-Rules you must follow in CSS 342:
--- Partners must be of "equal" ability and experience. For example, do not partner if one person knows C++ well and the other does not. Do not partner if one person has a self-perception of being a strong programmer and the other has a self-perception of being a weak programmer.
+The repo now contains a top-level `CMakeLists.txt` and test target rather than only the original flat assignment files, so CMake is the intended build entrypoint.
 
-My biggest concern is that if one person is a stronger programmer currently, the other person may believe they are understanding, but are not. Note that "strong" changes with experience. Also note that I am not concerned about one person cheating off another. If you don't understand, you WILL do poorly on my exams.
+## Run
 
--- Be sure you have comparable work habits and schedules. For example, early-starters don't work well with last-minute workers. If your schedule is such that you do all homework on the weekends and you plan to pair with someone who works weekends, that won't work well.
+### Demo / assignment driver
 
--- At least 70% of the work must be done working live together so you get the benefit of discussion.
+```sh
+./build/tbst
+```
 
--- I will ask you to write the name of your pair in thisform (Links to an external site.)
--- If pairing isn't working, contact me immediately.
+This is interactive — it will prompt you to enter a positive integer `n`, then build a threaded BST containing {1..n}, print it, copy it, remove even numbers from the copy, and print both.
 
--- One person will do the electronic turn-in, or if you both want to submit (using it for storage), I must be able to grab either one.
+### Tests
 
-The DOs of Pair programming (summary from video)
-Talk to each other, but be respectful.
-Listen to each other - either person should be able to do anything on the program at any point in time.
-Change roles of driver/navigator periodically.
-Be patient - be able to explain your work to your partner (or professor).
-Respect your partner.
-Take breaks.
-Be prepared; be ready to work on arrival and don't be late.
-The DON'Ts of Pair programming (summary from video posted on the main page)
-Don't be a keyboard hog; don't be bossy.
-Don't be intimidated; you're not alone if you don't understand.
-Don't be quiet; speak up if you disagree.
-Don't suffer in silence; talk to the professor if the pairing isn't working out.
+```sh
+./build/tbst_tests
+```
+
+## Tooling
+
+### Valgrind
+
+Run the tests under Valgrind:
+
+```sh
+ulimit -n 1024
+valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./build/tbst_tests
+```
+
+### clang-tidy
+
+Generate compile commands, then run static analysis:
+
+```sh
+cmake -S . -B build -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+clang-tidy threadedBST.cpp -p build
+clang-tidy ass5.cpp -p build
+clang-tidy tests.cpp -p build
+```
+
+### clang-format
+
+Check formatting:
+
+```sh
+clang-format --dry-run --Werror ass5.cpp threadedBST.cpp threadedBST.h tests.cpp
+```
+
+Format in place:
+
+```sh
+clang-format -i ass5.cpp threadedBST.cpp threadedBST.h tests.cpp
+```
+
+### Coverage
+
+Build with coverage instrumentation:
+
+```sh
+cmake -S . -B build-coverage -G Ninja \
+  -DCMAKE_CXX_FLAGS="--coverage -g -O0" \
+  -DCMAKE_EXE_LINKER_FLAGS="--coverage"
+
+cmake --build build-coverage
+./build-coverage/tbst_tests
+```
+
+Generate a text report:
+
+```sh
+cd build-coverage
+gcovr -r .. .
+```
+
+Generate an HTML report:
+
+```sh
+gcovr -r .. . --html-details coverage.html
+```
+
+## Notes on the Implementation
+
+This is a threaded BST, not a self-balancing tree. A few things to keep in mind:
+
+- The constructor always produces a balanced tree for the range {1..n}, but subsequent `add()` calls can unbalance it — there is no rebalancing.
+- Inorder traversal is the main strength: threads allow traversal without a stack or recursion.
+- Mutation logic is more complex than a plain BST because threads must be maintained on every insert and remove.
+- Worst-case search/insert/delete is still O(n) if the tree becomes unbalanced through additions after construction.
+- Only positive integers are supported; zero and negative values are not.
+
+The refactor focused on making the implementation cleaner and safer while preserving its behavior as a threaded BST rather than turning it into a different tree type.
+
+## Background
+
+This repository began as a CSS 342 assignment implementation and was later cleaned up to improve:
+
+- API boundaries
+- iterator visibility
+- deletion structure
+- copy semantics
+- regression testing
+- development reproducibility
+
+The current repository no longer matches the older script-driven README workflow; the cleaned version is now centered on CMake, the devcontainer, and the separate test target.
