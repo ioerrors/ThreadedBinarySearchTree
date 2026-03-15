@@ -338,6 +338,56 @@ bool threadedBST::remove(int value) {
   return removeHelper(value, this->root, this->root);
 }
 
+TNode *threadedBST::inorderPredecessor(TNode *node) const {
+  if (node == nullptr) {
+    return nullptr;
+  }
+
+  if (node->leftThread) {
+    return node->left;
+  }
+
+  TNode *walk = node->left;
+  while (walk != nullptr && !walk->rightThread && walk->right != nullptr) {
+    walk = walk->right;
+  }
+  return walk;
+}
+
+TNode *threadedBST::inorderSuccessor(TNode *node) const {
+  if (node == nullptr) {
+    return nullptr;
+  }
+
+  if (node->rightThread) {
+    return node->right;
+  }
+
+  TNode *walk = node->right;
+  while (walk != nullptr && !walk->leftThread && walk->left != nullptr) {
+    walk = walk->left;
+  }
+  return walk;
+}
+
+void threadedBST::retargetAdjacentThreads(TNode *removedNode) {
+  if (removedNode == nullptr) {
+    return;
+  }
+
+  TNode *predecessor = inorderPredecessor(removedNode);
+  TNode *successor = inorderSuccessor(removedNode);
+
+  if (predecessor != nullptr && predecessor->rightThread &&
+      predecessor->right == removedNode) {
+    predecessor->right = successor;
+  }
+  if (successor != nullptr && successor->leftThread &&
+      successor->left == removedNode) {
+    successor->left = predecessor;
+  }
+}
+
 bool threadedBST::hasRealLeft(const TNode *node) const {
   return node->left != nullptr && !node->leftThread;
 }
@@ -347,6 +397,8 @@ bool threadedBST::hasRealRight(const TNode *node) const {
 }
 
 void threadedBST::removeLeafNode(TNode *node, TNode *parent) {
+  retargetAdjacentThreads(node);
+
   if (parent == node) {
     root = nullptr;
   }
@@ -362,6 +414,8 @@ void threadedBST::removeLeafNode(TNode *node, TNode *parent) {
 
 void threadedBST::removeNodeWithOnlyRightChild(TNode *node) {
   TNode *deleteMe = node->right;
+  retargetAdjacentThreads(deleteMe);
+
   node->right = deleteMe->right;
   node->rightThread = deleteMe->rightThread;
   if (!deleteMe->leftThread) {
@@ -382,6 +436,8 @@ void threadedBST::removeNodeWithOnlyRightChild(TNode *node) {
 
 void threadedBST::removeNodeWithOnlyLeftChild(TNode *node) {
   TNode *deleteMe = node->left;
+  retargetAdjacentThreads(deleteMe);
+
   node->left = deleteMe->left;
   node->leftThread = deleteMe->leftThread;
   if (!deleteMe->rightThread) {
@@ -422,6 +478,7 @@ void threadedBST::removeNodeWithTwoChildren(TNode *node) {
       subTreeParent->right = subTreePtr->right;
       subTreeParent->rightThread = subTreePtr->rightThread;
     }
+    retargetAdjacentThreads(subTreePtr);
   }
   delete subTreePtr;
 }

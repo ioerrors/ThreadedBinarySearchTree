@@ -90,6 +90,10 @@ private:
   void removeNodeWithOnlyRightChild(TNode* node);
   void removeNodeWithOnlyLeftChild(TNode* node);
   void removeNodeWithTwoChildren(TNode* node);
+
+  TNode* inorderPredecessor(TNode* node) const;
+  TNode* inorderSuccessor(TNode* node) const;
+  void retargetAdjacentThreads(TNode* removedNode);
   
   //---------------------------------------------------------------------------
   // containsHelper()

@@ -210,6 +210,7 @@ void testComprehensive() {
   cout << "Special Test: Attempting to add a value already contained in tree:"
        << endl;
   threadedRightToLeft.add(4); // tree already contains 4
+
   cout << "=====================================================" << endl;
   cout << "=======Finished Tests for 100% Code Coverage:========" << endl;
   cout << "=====================================================" << endl;
