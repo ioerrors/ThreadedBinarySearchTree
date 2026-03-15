@@ -89,8 +89,6 @@ TNode *TNode::getLeft() const { return left; }
 //       OR returned nullptr if TNode has no right child
 TNode *TNode::getRight() const { return right; }
 
-
-
 //-----------------------------------------------------------------------------
 // getLeftThread()
 // Description: returns thread status
@@ -132,7 +130,9 @@ bool TNode::isLeaf() const {
 //       next/prev/upLevel/downLevel are nullptr
 iteratorBST::iteratorBST(TNode *root) {
   current = root;
-  if (current == nullptr) { return; }
+  if (current == nullptr) {
+    return;
+  }
   while (current->getLeft() != nullptr && !current->getLeftThread()) {
     current = current->getLeft();
   }
@@ -146,7 +146,9 @@ iteratorBST::iteratorBST(TNode *root) {
 // POST: returned true if successfully moved inorder by one
 //       OR returned false if there is no next Node in order
 bool iteratorBST::next() {
-  if (!hasNext()) { return false; }
+  if (!hasNext()) {
+    return false;
+  }
   if (!current->getRightThread()) {
     // Real right child: descend to the leftmost node of the right subtree.
     current = current->getRight();
@@ -159,7 +161,6 @@ bool iteratorBST::next() {
   }
   return true;
 }
-
 
 //-----------------------------------------------------------------------------
 // hasNext()
@@ -176,7 +177,6 @@ bool iteratorBST::hasNext() const { return current->getRight() != nullptr; }
 // PRE: threadedBST exists and this iterator exists
 // POST: returned TNode* current
 TNode *iteratorBST::getCurrent() const { return current; }
-
 
 //-----------------------------------------------------------------------------
 // threadedBST CONSTRUCTOR
@@ -307,9 +307,7 @@ threadedBST &threadedBST::operator=(const threadedBST &rhs) {
 // PRE: threadedBST exists
 // POST: threadedBST is destroyed, deleted;
 //       all allocated memory for the threadedBST is freed
-threadedBST::~threadedBST() {
-  clear(this->root);
-}
+threadedBST::~threadedBST() { clear(this->root); }
 
 //-----------------------------------------------------------------------------
 // clear()
@@ -564,7 +562,6 @@ bool threadedBST::addHelper(int value, TNode *node) {
   return true;
 }
 
-
 //-----------------------------------------------------------------------------
 // Checks to see whether or not a data data exists in the list
 // Returns true if the data exists in the threadedBST.
@@ -577,17 +574,21 @@ bool threadedBST::contains(int target) const {
 }
 
 //-----------------------------------------------------------------------------
-  // containsHelper()
-  // Description: Checks to see whether or not a data data exists in the list
-  //              recursive helper function for contains() --> containsHelper()
-  //              Returns true if the data exists in the threadedBST.
-  //              Returns false otherwise
-  // PRE: data may or may exist in threadedBST
-  // POST: if data exists in threadedBST, returned true
-  //       OR if data does not exist in list, returned false
+// containsHelper()
+// Description: Checks to see whether or not a data data exists in the list
+//              recursive helper function for contains() --> containsHelper()
+//              Returns true if the data exists in the threadedBST.
+//              Returns false otherwise
+// PRE: data may or may exist in threadedBST
+// POST: if data exists in threadedBST, returned true
+//       OR if data does not exist in list, returned false
 bool threadedBST::containsHelper(int target, TNode *node) const {
-  if (node == nullptr) { return false; }
-  if (target == node->data) { return true; }
+  if (node == nullptr) {
+    return false;
+  }
+  if (target == node->data) {
+    return true;
+  }
   if (target > node->data && node->right != nullptr && !node->rightThread) {
     return containsHelper(target, node->right);
   }
@@ -598,12 +599,12 @@ bool threadedBST::containsHelper(int target, TNode *node) const {
 }
 
 //-----------------------------------------------------------------------------
-  // addThreads()
-  // Description: iterates through a built threadedBST
-  //              and places threads where needed
-  // PRE: a non-empty threadedthreadedBST exists
-  // POST: nodes with nullptr children are given either predecessor,
-  //       successor, OR both threads where applicable
+// addThreads()
+// Description: iterates through a built threadedBST
+//              and places threads where needed
+// PRE: a non-empty threadedthreadedBST exists
+// POST: nodes with nullptr children are given either predecessor,
+//       successor, OR both threads where applicable
 void threadedBST::addThreads(TNode *treePtr) {
   if (treePtr != nullptr) {
     if (treePtr->isLeaf()) {
@@ -641,12 +642,12 @@ void threadedBST::addThreads(TNode *treePtr) {
 }
 
 //-----------------------------------------------------------------------------
-  // findNode()
-  // Description: calls contains() to check if target node exists in,
-  //              traverses through threadedthreadedBST at log(n) speed
-  //              returns target node's pointer if found, nullptr if not
-  // PRE: a non-empty threadedthreadedBST exists
-  // POST: returned a pointer
+// findNode()
+// Description: calls contains() to check if target node exists in,
+//              traverses through threadedthreadedBST at log(n) speed
+//              returns target node's pointer if found, nullptr if not
+// PRE: a non-empty threadedthreadedBST exists
+// POST: returned a pointer
 TNode *threadedBST::findNode(int target, TNode *treePtr) const {
   if (target < treePtr->data && treePtr->left != nullptr) {
     return findNode(target, treePtr->left);
@@ -657,6 +658,4 @@ TNode *threadedBST::findNode(int target, TNode *treePtr) const {
   return treePtr;
 }
 
-bool threadedBST::isEmpty() const {
-  return this->root == nullptr;
-}
+bool threadedBST::isEmpty() const { return this->root == nullptr; }

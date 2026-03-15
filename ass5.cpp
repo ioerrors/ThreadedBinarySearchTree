@@ -1,14 +1,13 @@
 //////////////////////////////////ass5.cpp file////////////////////////////////
 //-----------------------------------------------------------------------------
 // Created by Micah Rice & Bruce Nguyen on 03/04/2021.
-// 
-// Driver/Tester demonstrating functions of threadedBST class 
+//
+// Driver/Tester demonstrating functions of threadedBST class
 // takes user input, constructs threadedBSTs, demonstrates copyconstructor
 // and removes evens, displaying states of threadedBST
 // uses << operator on threadedBST which uses iterator class
 // to perform an inorder traversal of the threadedBST using threads
-// to output the data fields of the entire threadedBST in a single line 
-
+// to output the data fields of the entire threadedBST in a single line
 
 #include <cassert>
 #include <iostream>
@@ -31,10 +30,9 @@ void removeEvens(threadedBST &threadedCopy) {
   }
 }
 
-
 //-----------------------------------------------------------------------------
 // input()
-// user input of any non-negative number including zero 
+// user input of any non-negative number including zero
 // returned as int n
 // PRE: user has access to console, can input numbers
 // POST: int n is returned as the user inputted non-negative number
@@ -50,11 +48,10 @@ int input() {
   return n;
 }
 
-
 //-----------------------------------------------------------------------------
 // userDefinedTest()
 // takes user input and creates threadedBSTs according to input n.
-//       trees are then displayed, and destroyed, repeating until input is zero 
+//       trees are then displayed, and destroyed, repeating until input is zero
 //       note: uses iterator class in the << operator of threadedBST
 // PRE: user has access to console, can input numbers
 // POST: threadedBSTs created according to input n
@@ -96,9 +93,9 @@ void userDefinedTest() {
 // calls functions to test every case possible to get 100% code coverage
 // for all of threadedBST and iterator class functions
 // and calls userDefinedTest to created user defined threadedBSTs
-// PRE: threadedBST exists as a data type, 
+// PRE: threadedBST exists as a data type,
 //      console is 80 characters wide or more
-// POST: many threadedBSTs have been printed to cout, 
+// POST: many threadedBSTs have been printed to cout,
 //       ascii art is displayed showing end of program
 int main() {
   userDefinedTest();
