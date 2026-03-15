@@ -222,38 +222,65 @@ void threadedBST::constructorHelper(int start, int end) {
 
 //-----------------------------------------------------------------------------
 // threadedBST COPY CONSTRUCTOR
-// Description: creates exact copy of given TBST
-//              calls copyConstHelper() to determine largest integer value n
-//              calls constructorHelper() to create full n-sized tree
-//              calls remove() on integers not contained in original
-//              calls addThreads to add threads to applicables nodes
-// PRE: oldBST is non-empty
-// POST: an exact copy of oldBST is constructed
+// Description: creates exact copy of given TBST by cloning real child links
+//              and then rebuilding thread links explicitly by inorder traversal
+// PRE: oldBST may be empty or non-empty
+// POST: an exact structural and threaded copy of oldBST is constructed
 threadedBST::threadedBST(const threadedBST &oldBST) {
-  // indexes
-  int start = 1;
-  TNode *n = oldBST.root;
-  int end = copyConstHelper(n);
-  if (end != 0) {
-    int mid = (end + start) / 2;
+  this->root = cloneRealChildren(oldBST.root);
+  rebuildAllThreads(this->root);
+}
 
-    // create node, attach to this->root
-    this->root = new TNode(mid);
-    constructorHelper(start, mid);
-    constructorHelper(mid + 1, end);
-
-    // add threads
-    addThreads(this->root);
-
-    // for loop removing nodes not in oldBST
-    for (int i = 1; i < end; i++) {
-      if (!oldBST.contains(i)) {
-        this->remove(i);
-      }
-    }
-  } else {
-    this->root = nullptr;
+TNode *threadedBST::cloneRealChildren(const TNode *source) {
+  if (source == nullptr) {
+    return nullptr;
   }
+
+  TNode *clone = new TNode(source->data);
+  if (source->left != nullptr && !source->leftThread) {
+    clone->left = cloneRealChildren(source->left);
+  }
+  if (source->right != nullptr && !source->rightThread) {
+    clone->right = cloneRealChildren(source->right);
+  }
+  return clone;
+}
+
+void threadedBST::rebuildThreadsInorder(TNode *node, TNode *&prev) {
+  if (node == nullptr) {
+    return;
+  }
+
+  TNode *leftChild = node->left;
+  TNode *rightChild = node->right;
+
+  rebuildThreadsInorder(leftChild, prev);
+
+  if (node->left == nullptr) {
+    node->left = prev;
+    node->leftThread = (prev != nullptr);
+  } else {
+    node->leftThread = false;
+  }
+
+  if (prev != nullptr && prev->right == nullptr) {
+    prev->right = node;
+    prev->rightThread = true;
+  }
+
+  node->rightThread = false;
+  prev = node;
+
+  rebuildThreadsInorder(rightChild, prev);
+}
+
+void threadedBST::rebuildAllThreads(TNode *rootNode) {
+  if (rootNode == nullptr) {
+    return;
+  }
+
+  TNode *prev = nullptr;
+  rebuildThreadsInorder(rootNode, prev);
 }
 
 //-----------------------------------------------------------------------------
@@ -271,26 +298,6 @@ threadedBST &threadedBST::operator=(const threadedBST &rhs) {
   }
   return *this;
 }
-
-//-----------------------------------------------------------------------------
-// copyConstructorHelper()
-// Description: recursive helper function for constructor
-//              iterates through right branches of original tree
-//              and returns largest integer in original tree
-// PRE: threadedthreadedBST exists with at least single node
-// POST: returned integer of maximum doata value to the right of treePtr
-//       OR returned 0 if tree is isEmpty
-int threadedBST::copyConstHelper(TNode *treePtr) {
-  if (treePtr != nullptr) {
-    while (treePtr->right != nullptr) {
-      treePtr = treePtr->right;
-    }
-    return treePtr->data;
-  } else {
-    return 0;
-  }
-}
-
 
 //------------------------------------------------------------------------------
 // threadedBST DESTRUCTOR

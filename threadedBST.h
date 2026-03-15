@@ -114,15 +114,9 @@ private:
   // POST: threadedBST is constructed in full after all recursive calls finish 
   void constructorHelper(int start, int end);
 
-  //---------------------------------------------------------------------------
-  // copyConstructorHelper()
-  // Description: recursive helper function for constructor 
-  //              iterates through right branches of original tree 
-  //              and returns largest integer in original tree
-  // PRE: threadedthreadedBST exists with at least single node
-  // POST: returned integer of maximum doata value to the right of treePtr 
-  //       OR returned 0 if tree is isEmpty
-  int copyConstHelper(TNode* treePtr);
+  TNode* cloneRealChildren(const TNode* source);
+  void rebuildThreadsInorder(TNode* node, TNode*& prev);
+  void rebuildAllThreads(TNode* rootNode);
 
   //---------------------------------------------------------------------------
   // addThreads()
