@@ -12,158 +12,38 @@
 
 #include <iosfwd>
 
-// only threadedBST class can create TNode objects
+// Forward declarations — iteratorBST is an implementation detail defined in
+// threadedBST.cpp; it is forward-declared here only so TNode can grant it
+// friendship.
 class threadedBST;
+class iteratorBST;
 
 //-----------------------------------------------------------------------------
+// TNode: internal node of threadedBST. Not part of the public interface;
+// all members are private, accessible only to threadedBST, iteratorBST,
+// and operator<<.
 class TNode {
   friend class threadedBST;
-
-  //---------------------------------------------------------------------------
-  // Overloaded Operator <<
-  // Description: traverses tree inorder, 
-  //              and prints each node's data as it passes
-  // PRE: threadedBST exists
-  // POST: All contained integers between 1 and n are printed to output
-  friend std::ostream &operator<<(std::ostream &os, const threadedBST &list);
+  friend class iteratorBST;
+  friend std::ostream &operator<<(std::ostream &os, const threadedBST &bst);
 
 private:
-  //---------------------------------------------------------------------------
-  // TNode CONSTRUCTOR
-  // Description: creates a new TNode and sets its data value
-  // PRE: this TNode does not exist
-  // POST: this TNode is created and data is set
-  //       next/prev/upLevel/downLevel are nullptr
   explicit TNode(int data);
 
-  // data contained in the object
-  int data;
-
-  // link to left TNode child
+  int   data;
   TNode *left;
-
-  // link to right TNode child
   TNode *right;
+  bool  leftThread;   // true when left pointer is a predecessor thread
+  bool  rightThread;  // true when right pointer is a successor thread
 
-  // true if left child pointer is actually a thread
-  bool leftThread; 
-  
-  // true if right child pointer is actually a thread
-  bool rightThread;
-
-  //---------------------------------------------------------------------------
-  // isLeaf()
-  // Description: returns true if this TNode object is a leaf
-  // PRE: this TNode object does exist
-  // POST: returned true if TNode is leaf
-  //       OR returned false if TNode is not a leaf
   bool isLeaf() const;
+  int  getData() const;
 
-public:
-  //---------------------------------------------------------------------------
-  // getData()
-  // Description: returns int value 
-  // of the data field for this TNode object
-  // PRE: this TNode object does exist
-  // POST: returned int value of data field
-  int getData() const;
+  TNode *getLeft()  const;
+  TNode *getRight() const;
 
-  //---------------------------------------------------------------------------
-  // getLeft()
-  // Description: returns left child of this TNode
-  // PRE: this TNode object does exist
-  // POST: returned this TNode's left child
-  //       OR returned nullptr if TNode has no left child
-  TNode* getLeft() const;
-
-  //---------------------------------------------------------------------------
-  // getRight()
-  // Description: returns right child of this TNode
-  // PRE: this TNode object does exist
-  // POST: returned this TNode's right child
-  //       OR returned nullptr if TNode has no right child
-  TNode* getRight() const;
-
-
-  //---------------------------------------------------------------------------
-  // getLeftThread()
-  // Description: returns thread status 
-  //              of the left child of this TNode
-  // PRE: this TNode object does exist
-  // POST: returned this TNode's left child thread status
-  bool getLeftThread() const;
-  
-  //---------------------------------------------------------------------------
-  // getRightThread()
-  // Description: returns thread status 
-  //              of the right child of this TNode
-  // PRE: this TNode object does exist
-  // POST: returned this TNode's right child thread status
+  bool getLeftThread()  const;
   bool getRightThread() const;
-
-};
-
-class iteratorBST {
-  friend class threadedBST;
-  friend class TNode;
-
-  //---------------------------------------------------------------------------
-  // Overloaded Operator <<
-  // Description: traverses tree inorder, 
-  //              and prints each node's data as it passes
-  // PRE: threadedBST exists
-  // POST: All contained integers between 1 and n are printed to output
-  friend std::ostream &operator<<(std::ostream &os, const threadedBST &list);
-
-
-  //---------------------------------------------------------------------------
-  // Overloaded Operator ++
-  // Description: calls next() to traverse tree inorder by one, 
-  //              by moving the TNode* current by one in order
-  // PRE: threadedBST exists and this iterator exists
-  // POST: returned true if successfully moved inorder by one
-  //       OR returned false if there is no next Node in order
-  friend bool operator++(iteratorBST &iterator, int);
-  
-private:
-  //Iterator pointer node tracks current position
-  TNode* current;
-
-public:
-
-  //---------------------------------------------------------------------------
-  // iteratorBST CONSTRUCTOR
-  // Description: constructs an iterator object 
-  //              for traversing through the threadedBST using threads
-  // PRE: this TNode does not exist
-  // POST: this TNode is created and data is set
-  //       next/prev/upLevel/downLevel are nullptr  
-  explicit iteratorBST(TNode* root);
-
-  //---------------------------------------------------------------------------
-  // next()
-  // Description: traverses tree inorder by one, 
-  //              by moving the TNode* current
-  // PRE: threadedBST exists and this iterator exists
-  // POST: returned true if successfully moved inorder by one
-  //       OR returned false if there is no next Node in order
-  bool next();
-
-  //---------------------------------------------------------------------------
-  // hasNext()
-  // Description: checks if current is 
-  //              not yet at max value of the threadedBST
-  // PRE: threadedBST exists and this iterator exists
-  // POST: returned true if current is not at the max value
-  //       OR returned false if current is at max value
-  bool hasNext() const;
-
-  //---------------------------------------------------------------------------
-  // getCurrent()
-  // Description: returns TNode* current
-  // PRE: threadedBST exists and this iterator exists
-  // POST: returned TNode* current
-  TNode* getCurrent() const;
 };
 
 
@@ -240,15 +120,11 @@ private:
   // POST: nodes with nullptr children are given either predecessor,
   //       successor, OR both threads where applicable
   void addThreads(TNode* treePtr);
-
-  //---------------------------------------------------------------------------
-  // findNode()
-  // Description: calls contains() to check if target node exists in,
-  //              traverses through threadedthreadedBST at log(n) speed 
-  //              returns target node's pointer if found, nullptr if not 
-  // PRE: a non-empty threadedthreadedBST exists
-  // POST: returned a pointer 
   TNode* findNode(int target, TNode* treePtr) const;
+
+  // Destroys all nodes in the subtree rooted at subTreePtr.
+  // Private: callers outside the class must not invoke this directly.
+  void clear(TNode* subTreePtr);
 
 public:
 
@@ -274,70 +150,12 @@ public:
 
   threadedBST &operator=(const threadedBST &rhs);
 
-  //---------------------------------------------------------------------------
-  // getRoot()
-  // Description: returns root pointer 
-  // PRE: threadedBST exists
-  // POST: root pointer is returned 
-  TNode* getRoot() const;
-
-  //---------------------------------------------------------------------------
-  // threadedBST DESTRUCTOR
-  // Description: destroys threadedBST object
-  //              calls clear() as helper function 
-  //              to delete nodes from memory 
-  // PRE: threadedBST exists
-  // POST: threadedBST is destroyed, deleted; 
-  //       all allocated memory for the threadedBST is freed
   virtual ~threadedBST();
 
-  //-----------------------------------------------------------------------------
-  // add()
-  // Description: return true if successfully added, no duplicates
-  //              calls addHelper for actual adding process   
-  // PRE: data may or may not already exist in threadedBST
-  // POST: if data did not exist in threadedBST,
-  //       TNode is created with data and added to threadedBST
-  //       OR if data did exist in threadedBST, returned false
-  //       (no duplicates allowed)
   bool add(int data);
-
-  //---------------------------------------------------------------------------
-  // remove()
-  // Description: return true if successfully removed
-  // PRE: data may or may exist in threadedBST
-  // POST: data removed from threadedBST, returned true
-  //       calls removeHelper for actual removal process
   bool remove(int data);
-
-  //-----------------------------------------------------------------------------
-  // contains()
-  // Description: Checks to see whether or not a data data exists in the list
-  //              Returns true if the data exists in the threadedBST.
-  //              Returns false otherwise
-  // PRE: data may or may exist in threadedBST
-  // POST: if data exists in threadedBST, returned true
-  //       OR if data does not exist in list, returned false
   bool contains(int data) const;
-
-  //---------------------------------------------------------------------------
-  // isEmpty()
-  // Description: return true if tree has 0 nodes 
-  //              by checking if root is nullptr
-  // PRE: threadedBST exists
-  // POST: returns true if root is a nullptr
-  //       OR returns false if root is not a nullptr 
   bool isEmpty() const;
-
-  //---------------------------------------------------------------------------
-  // clear()
-  // Description: deletes all nodes in threadedBST
-  //              traverses and delete in postorder fashion
-  // PRE: threadedBST exists
-  // POST: threadedBST is deletedd from memory 
-  //       all allocated memory for the threadedBST is freed
-  void clear(TNode* subTreePtr);
-
 };
 
 #endif //ASS5_THREADEDBST_H

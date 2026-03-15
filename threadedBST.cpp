@@ -14,6 +14,24 @@
 using namespace std;
 
 //-----------------------------------------------------------------------------
+// iteratorBST: internal cursor for inorder traversal via thread links.
+// Defined here rather than in the header because it is an implementation
+// detail of operator<< and is not part of the public API.
+class iteratorBST {
+  friend ostream &operator<<(ostream &os, const threadedBST &bst);
+
+  TNode *current;
+
+public:
+  explicit iteratorBST(TNode *root);
+  bool next();
+  bool hasNext() const;
+  TNode *getCurrent() const;
+  // Postfix ++ advances inorder by one; returns false when exhausted.
+  bool operator++(int) { return next(); }
+};
+
+//-----------------------------------------------------------------------------
 // Overloaded Operator <<
 // Description: traverses tree inorder,
 //              and prints each node's data as it passes
@@ -25,7 +43,7 @@ ostream &operator<<(ostream &os, const threadedBST &bst) {
     os << "empty tree";
     return os;
   }
-  iteratorBST iterate(bst.getRoot());
+  iteratorBST iterate(bst.root);
   os << iterate.getCurrent()->getData() << " ";
   // use iteratorBST?
 
@@ -35,17 +53,6 @@ ostream &operator<<(ostream &os, const threadedBST &bst) {
   }
   return os;
 }
-
-//-----------------------------------------------------------------------------
-// Overloaded Operator ++
-// Description: calls next() to traverse tree inorder by one,
-//              by moving the TNode* current by one in order
-// PRE: threadedBST exists and this iterator exists
-// POST: returned true if successfully moved inorder by one
-//       OR returned false if there is no next Node in order
-bool operator++(iteratorBST &itty, int) { return itty.next(); }
-
-
 
 //-----------------------------------------------------------------------------
 // TNode CONSTRUCTOR
@@ -232,7 +239,7 @@ void threadedBST::constructorHelper(int start, int end) {
 threadedBST::threadedBST(const threadedBST &oldBST) {
   // indexes
   int start = 1;
-  TNode *n = oldBST.getRoot();
+  TNode *n = oldBST.root;
   int end = copyConstHelper(n);
   if (end != 0) {
     int mid = (end + start) / 2;
@@ -600,17 +607,6 @@ TNode *threadedBST::findNode(int target, TNode *treePtr) const {
   return treePtr;
 }
 
-// comment these
 bool threadedBST::isEmpty() const {
-  if (this->root == nullptr) {
-    return true;
-  }
-  return false;
+  return this->root == nullptr;
 }
-
-//-----------------------------------------------------------------------------
-  // getRoot()
-  // Description: returns root pointer
-  // PRE: threadedBST exists
-  // POST: root pointer is returned
-TNode *threadedBST::getRoot() const { return this->root; }
