@@ -171,8 +171,11 @@ static void testComprehensive() {
     assertContainsSet(original, {6, 7, 8, 9, 12}, {});
     assertContainsSet(copied, {8, 9, 12}, {6, 7});
     assertContainsSet(assigned, {6, 7, 12}, {8, 9});
-
+    
+    // intentional self-assignment test
+    // NOLINTNEXTLINE(clang-diagnostic-self-assign-overloaded)
     assigned = assigned;
+    
     assertContainsSet(assigned, {6, 7, 12}, {8, 9});
   }
 
