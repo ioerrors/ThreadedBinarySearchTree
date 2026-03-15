@@ -45,10 +45,8 @@ ostream &operator<<(ostream &os, const threadedBST &bst) {
   }
   iteratorBST iterate(bst.root);
   os << iterate.getCurrent()->getData() << " ";
-  // use iteratorBST?
 
   while (iterate++) {
-    // iterate++;
     os << iterate.getCurrent()->getData() << " ";
   }
   return os;
@@ -148,18 +146,16 @@ iteratorBST::iteratorBST(TNode *root) {
 // POST: returned true if successfully moved inorder by one
 //       OR returned false if there is no next Node in order
 bool iteratorBST::next() {
-  if (hasNext()) {
-    if (current->getRight() != nullptr && current->getLeft() != nullptr &&
-        !current->getLeftThread() && !current->getRightThread()) {
-      current = current->getRight();
-      while (!current->getLeftThread() && current->getLeft() != nullptr) {
-        current = current->getLeft();
-      }
-    } else if (current != nullptr && current->getRight() != nullptr) {
-      current = current->getRight();
+  if (!hasNext()) { return false; }
+  if (!current->getRightThread()) {
+    // Real right child: descend to the leftmost node of the right subtree.
+    current = current->getRight();
+    while (current->getLeft() != nullptr && !current->getLeftThread()) {
+      current = current->getLeft();
     }
   } else {
-    return false;
+    // Successor thread: follow it directly to the inorder successor.
+    current = current->getRight();
   }
   return true;
 }
@@ -211,17 +207,14 @@ threadedBST::threadedBST(int n) {
 // POST: threadedBST is constructed in full after all recursive calls finish
 void threadedBST::constructorHelper(int start, int end) {
   if (start <= end) {
-    // pick middle index
     int mid = (start + end) / 2;
     if (mid != root->data) {
-      // add middle index
       add(mid);
     }
     if (start != end) {
-      if (end > 2) {
-        // call on sub array left
-        constructorHelper(start, mid - 1);
-      }
+      // The start <= end guard above makes the end > 2 check redundant:
+      // constructorHelper(start, mid-1) returns immediately when mid == start.
+      constructorHelper(start, mid - 1);
       constructorHelper(mid + 1, end);
     }
   }
@@ -292,7 +285,7 @@ int threadedBST::copyConstHelper(TNode *treePtr) {
     while (treePtr->right != nullptr) {
       treePtr = treePtr->right;
     }
-    return (treePtr->data);
+    return treePtr->data;
   } else {
     return 0;
   }
@@ -308,8 +301,7 @@ int threadedBST::copyConstHelper(TNode *treePtr) {
 // POST: threadedBST is destroyed, deleted;
 //       all allocated memory for the threadedBST is freed
 threadedBST::~threadedBST() {
-  // need to delete individual nodes
-  clear(this->root); // 9
+  clear(this->root);
 }
 
 //-----------------------------------------------------------------------------
@@ -469,8 +461,7 @@ bool threadedBST::add(int value) {
     root = new TNode(value);
     return true;
   }
-  // would like to just say contains(value)
-  if (contains(value)) { // maybe include containsHelper(data, this->root);
+  if (contains(value)) {
     cout << "Duplicates are not allowed: " << value << endl;
     return false;
   }
@@ -488,19 +479,16 @@ bool threadedBST::add(int value) {
 //       (no duplicates allowed)
 bool threadedBST::addHelper(int value, TNode *node) {
   if (value < node->data) {
-    if (node->left != nullptr) { // goes down left branch
+    if (node->left != nullptr) {
       return addHelper(value, node->left);
-    } else { // found leaf
-      TNode *newNode = new TNode(value);
-      node->left = newNode;
+    } else {
+      node->left = new TNode(value);
     }
-  }
-  if (value > node->data) {
-    if (node->right != nullptr) { // goes down right branch
+  } else if (value > node->data) {
+    if (node->right != nullptr) {
       return addHelper(value, node->right);
-    } else {                             // found leaf
-      TNode *newNode = new TNode(value); // create node directly before use
-      node->right = newNode;
+    } else {
+      node->right = new TNode(value);
     }
   }
   return true;
@@ -528,21 +516,13 @@ bool threadedBST::contains(int target) const {
   // POST: if data exists in threadedBST, returned true
   //       OR if data does not exist in list, returned false
 bool threadedBST::containsHelper(int target, TNode *node) const {
-  if (node != nullptr) {
-    // check if node's data is target
-    if (target == node->data) {
-      return true;
-    }
-    if (target > node->data && node->right != nullptr &&
-        node->rightThread == false) {
-      node = node->right;
-      return containsHelper(target, node);
-    }
-    if (target < node->data && node->left != nullptr &&
-        node->leftThread == false) {
-      node = node->left;
-      return containsHelper(target, node);
-    }
+  if (node == nullptr) { return false; }
+  if (target == node->data) { return true; }
+  if (target > node->data && node->right != nullptr && !node->rightThread) {
+    return containsHelper(target, node->right);
+  }
+  if (target < node->data && node->left != nullptr && !node->leftThread) {
+    return containsHelper(target, node->left);
   }
   return false;
 }
