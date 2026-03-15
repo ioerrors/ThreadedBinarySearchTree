@@ -338,6 +338,94 @@ bool threadedBST::remove(int value) {
   return removeHelper(value, this->root, this->root);
 }
 
+bool threadedBST::hasRealLeft(const TNode *node) const {
+  return node->left != nullptr && !node->leftThread;
+}
+
+bool threadedBST::hasRealRight(const TNode *node) const {
+  return node->right != nullptr && !node->rightThread;
+}
+
+void threadedBST::removeLeafNode(TNode *node, TNode *parent) {
+  if (parent == node) {
+    root = nullptr;
+  }
+  if (parent->right == node) {
+    parent->right = node->right;
+    parent->rightThread = node->rightThread;
+  } else {
+    parent->left = node->left;
+    parent->leftThread = node->leftThread;
+  }
+  delete node;
+}
+
+void threadedBST::removeNodeWithOnlyRightChild(TNode *node) {
+  TNode *deleteMe = node->right;
+  node->right = deleteMe->right;
+  node->rightThread = deleteMe->rightThread;
+  if (!deleteMe->leftThread) {
+    node->left = deleteMe->left;
+    TNode *findThread = deleteMe;
+    while (!findThread->leftThread) {
+      findThread = findThread->left;
+    }
+    findThread->leftThread = false;
+    findThread->left = nullptr;
+  } else {
+    node->left = nullptr;
+    node->leftThread = false;
+  }
+  node->data = deleteMe->data;
+  delete deleteMe;
+}
+
+void threadedBST::removeNodeWithOnlyLeftChild(TNode *node) {
+  TNode *deleteMe = node->left;
+  node->left = deleteMe->left;
+  node->leftThread = deleteMe->leftThread;
+  if (!deleteMe->rightThread) {
+    node->right = deleteMe->right;
+    TNode *findThread = deleteMe;
+    while (!findThread->rightThread) {
+      findThread = findThread->right;
+    }
+    findThread->rightThread = false;
+    findThread->right = nullptr;
+  } else {
+    node->right = nullptr;
+    node->rightThread = false;
+  }
+  node->data = deleteMe->data;
+  delete deleteMe;
+}
+
+void threadedBST::removeNodeWithTwoChildren(TNode *node) {
+  TNode *subTreeParent = node;
+  TNode *subTreePtr = node->right;
+  if (subTreePtr != nullptr) {
+    if (!subTreePtr->leftThread && subTreePtr->left != nullptr) {
+      while (!subTreePtr->leftThread && subTreePtr->left != nullptr) {
+        subTreeParent = subTreePtr;
+        subTreePtr = subTreePtr->left;
+      }
+
+      node->data = subTreePtr->data;
+
+      if (subTreePtr->isLeaf()) {
+        subTreeParent->left = nullptr;
+      } else {
+        subTreeParent->left = subTreePtr->right;
+      }
+    } else {
+      node->data = subTreePtr->data;
+      subTreeParent->right = subTreePtr->right;
+      subTreeParent->rightThread = subTreePtr->rightThread;
+    }
+  }
+  delete subTreePtr;
+}
+
 //---------------------------------------------------------------------------
 // removeHelper()
 // Description: recursive helper function for remove() --> removeHelper()
@@ -350,100 +438,18 @@ bool threadedBST::removeHelper(int value, TNode *node, TNode *parent) {
     return removeHelper(value, node->left, node);
   } else if (value > node->data) {
     return removeHelper(value, node->right, node);
-  } else {
-    // at this point data === node->data
-    // check if leaf, if so, remove.
-    if (node->isLeaf()) {
-      if (parent == node) {
-        root = nullptr;
-      }
-      if (parent->right == node) {
-        parent->right = node->right;
-        parent->rightThread = node->rightThread;
-      } else {
-        parent->left = node->left;
-        parent->leftThread = node->leftThread;
-      }
-      delete node;
-    }
-    // check if right child only
-    else if ((node->left == nullptr || node->leftThread) &&
-             (node->right != nullptr && !node->rightThread)) {
-      TNode *deleteMe = node->right;
-      node->right = deleteMe->right;
-      node->rightThread = deleteMe->rightThread;
-      if (!deleteMe->leftThread) {
-        node->left = deleteMe->left;
-        TNode *findThread = deleteMe;
-        while (!findThread->leftThread) {
-          findThread = findThread->left;
-        }
-        findThread->leftThread = false;
-        findThread->left = nullptr;
-      } else {
-        node->left = nullptr;
-        node->leftThread = false;
-      }
-      node->data = deleteMe->data;
-      delete deleteMe;
-    }
-    // check if left child only
-    else if ((node->right == nullptr || node->rightThread) &&
-             (node->left != nullptr && !node->leftThread)) {
-      TNode *deleteMe = node->left;
-      node->left = deleteMe->left;
-      node->leftThread = deleteMe->leftThread;
-      if (!deleteMe->rightThread) {
-        node->right = deleteMe->right;
-        TNode *findThread = deleteMe;
-        while (!findThread->rightThread) {
-          findThread = findThread->right;
-        }
-        findThread->rightThread = false;
-        findThread->right = nullptr;
-      } else {
-        node->right = nullptr;
-        node->rightThread = false;
-      }
-      node->data = deleteMe->data;
-      delete deleteMe;
-    }
-    // oh no; has both
-    else {
-      // take right subtree
-      TNode *subTreeParent = node;
-      TNode *subTreePtr = node->right;
-      // check if we have left children
-      if (subTreePtr != nullptr) {
-        if (!subTreePtr->leftThread && subTreePtr->left != nullptr) {
-          // if so move to leftmost child
-          while (!subTreePtr->leftThread && subTreePtr->left != nullptr) {
-            subTreeParent = subTreePtr;
-            subTreePtr = subTreePtr->left;
-          }
-
-          // copy over the data
-          if (subTreePtr != nullptr) {
-            node->data = subTreePtr->data;
-          }
-
-          // if leaf, sets parent->left to nullptr
-          if (subTreePtr->isLeaf()) {
-            subTreeParent->left = nullptr;
-          } else {
-            // if right child only, sets parent->left to that branch
-            subTreeParent->left = subTreePtr->right;
-          }
-        } else {
-          node->data = subTreePtr->data;
-          subTreeParent->right = subTreePtr->right;
-          subTreeParent->rightThread = subTreePtr->rightThread;
-        }
-      }
-      // now delete subTreePtr
-      delete subTreePtr;
-    }
   }
+
+  if (!hasRealLeft(node) && !hasRealRight(node)) {
+    removeLeafNode(node, parent);
+  } else if (!hasRealLeft(node) && hasRealRight(node)) {
+    removeNodeWithOnlyRightChild(node);
+  } else if (hasRealLeft(node) && !hasRealRight(node)) {
+    removeNodeWithOnlyLeftChild(node);
+  } else {
+    removeNodeWithTwoChildren(node);
+  }
+
   return true;
 }
 

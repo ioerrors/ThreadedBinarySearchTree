@@ -82,6 +82,14 @@ private:
   // POST: data removed from threadedBST, returned true
   //       if data already did not exist in list returned false
   bool removeHelper(int data, TNode* node, TNode* parent);
+
+  bool hasRealLeft(const TNode* node) const;
+  bool hasRealRight(const TNode* node) const;
+
+  void removeLeafNode(TNode* node, TNode* parent);
+  void removeNodeWithOnlyRightChild(TNode* node);
+  void removeNodeWithOnlyLeftChild(TNode* node);
+  void removeNodeWithTwoChildren(TNode* node);
   
   //---------------------------------------------------------------------------
   // containsHelper()
